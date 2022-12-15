@@ -11,7 +11,7 @@ import com.apu.user.entity.District;
 import com.apu.user.exceptions.EmployeeNotFoundException;
 import com.apu.user.exceptions.GenericException;
 import com.apu.user.repository.CountryRepository;
-import com.apu.user.repository.CustomUserRepository;
+import com.apu.user.repository.CustomerRepository;
 import com.apu.user.repository.DistrictRepository;
 import com.apu.user.security_oauth2.models.security.Authority;
 import com.apu.user.security_oauth2.models.security.User;
@@ -48,7 +48,7 @@ import java.util.Optional;
 @Slf4j
 @RefreshScope
 public class CustomUserServiceImpl implements CustomUserService {
-    private final CustomUserRepository customUserRepository;
+    private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final CountryRepository countryRepository;
@@ -60,18 +60,18 @@ public class CustomUserServiceImpl implements CustomUserService {
     @Lazy
     private final RestTemplate template;
 
-    @Value("${microservice.payslip-service.endpoints.endpoint.uri}")
-    private String GENERATE_PAYSLIP_WHILE_JOINING;
+//    @Value("${microservice.payslip-service.endpoints.endpoint.uri}")
+//    private String GENERATE_PAYSLIP_WHILE_JOINING;
 
     @Autowired
-    CustomUserServiceImpl(CustomUserRepository customUserRepository,
+    CustomUserServiceImpl(CustomerRepository customerRepository,
                           UserRepository userRepository,
                           AuthorityRepository authorityRepository,
                           CountryRepository countryRepository,
                           DistrictRepository districtRepository,
                           @Lazy RestTemplate template,
                           @Qualifier("userPasswordEncoder")PasswordEncoder passwordEncoder){
-        this.customUserRepository = customUserRepository;
+        this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
@@ -116,7 +116,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     public CustomUserDto signUpUser(CreateUpdateCustomUserDto createUpdateCustomUserDto) throws GenericException {
         try {
             log.info("CustomUserServiceImpl::signUpUser service start: email: {}", createUpdateCustomUserDto.getEmail());
-            Optional<Customer> optionalCustomUser = customUserRepository.findByEmail(createUpdateCustomUserDto.getEmail());
+            Optional<Customer> optionalCustomUser = customerRepository.findByEmail(createUpdateCustomUserDto.getEmail());
             if (optionalCustomUser.isPresent()){
                 log.error("CustomUserServiceImpl::signUpUser service:  userId: {} already exists", createUpdateCustomUserDto.getUserId());
                 throw new GenericException(Defs.USER_ALREADY_EXISTS);
@@ -159,7 +159,7 @@ public class CustomUserServiceImpl implements CustomUserService {
             customer.setCreatedBy(1l);
             customer.setCreateTime(LocalDateTime.now());
 
-            customer = customUserRepository.save(customer);
+            customer = customerRepository.save(customer);
 
             CustomUserDto customUserDto = new CustomUserDto();
             Utils.copyProperty(customer, customUserDto);
@@ -179,7 +179,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     public CustomUserDto findByUsername(String username) throws GenericException{
         try {
             log.debug("CustomUserServiceImpl::findByUsername start:  username: {} ", username);
-            Optional<Customer> optionalEmployee = customUserRepository.findByEmail(username);
+            Optional<Customer> optionalEmployee = customerRepository.findByEmail(username);
             if (!optionalEmployee.isPresent() || optionalEmployee.get().getStatus().equals(false)) {
                 log.debug("CustomUserServiceImpl::findByUsername user not found by  username: {} ", username);
                 return null;
@@ -197,7 +197,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     public CustomUserDto findCustomerById(Long id) throws GenericException{
         try {
             log.info("CustomUserServiceImpl::findEmployeeById start:  id: {} ", id);
-            Optional<Customer> optionalUser = customUserRepository.findById(id);
+            Optional<Customer> optionalUser = customerRepository.findById(id);
 
             if (!optionalUser.isPresent() || optionalUser.get().getStatus().equals(false)) {
                 log.debug("CustomUserServiceImpl::findEmployeeById employee not found by id: {} ", id);
@@ -219,12 +219,12 @@ public class CustomUserServiceImpl implements CustomUserService {
         try {
             log.debug("CustomUserServiceImpl::updateEmployeeById start:  id: {} ", id);
 
-            Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
+            Optional<Customer> loggedInEmployee = customerRepository.getLoggedInEmployee();
             if (loggedInEmployee.isPresent() && !loggedInEmployee.get().getId().equals(id)) {
                 throw new GenericException("No permission to up update!");
             }
 
-            Optional<Customer> optionalEmployee = customUserRepository.findById(id);
+            Optional<Customer> optionalEmployee = customerRepository.findById(id);
             if (!optionalEmployee.isPresent() || optionalEmployee.get().getStatus().equals(false)){
                 log.debug("CustomUserServiceImpl::updateEmployeeById employee not found by id: {} ", id);
                 throw new EmployeeNotFoundException(Defs.USER_NOT_FOUND);
@@ -238,7 +238,7 @@ public class CustomUserServiceImpl implements CustomUserService {
             if (!Utils.isNullOrEmpty(employeeDto.getLastName())) {
                 employee.setLastName(employeeDto.getLastName());
             }
-            employee = customUserRepository.save(employee);
+            employee = customerRepository.save(employee);
             log.debug("CustomUserServiceImpl::updateEmployeeById employee update successful:  employee: {} ", employee.toString());
 
             Utils.copyProperty(employee, employeeDto);
@@ -256,13 +256,13 @@ public class CustomUserServiceImpl implements CustomUserService {
         try {
             log.info("CustomUserServiceImpl::getEmployeeList start:  criteria: {} ", Utils.jsonAsString(criteria));
 
-            Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
+            Optional<Customer> loggedInEmployee = customerRepository.getLoggedInEmployee();
             Long id = null;
             if (loggedInEmployee.isPresent()) {
                 id = loggedInEmployee.get().getId();
             }
 
-            Page<Customer> userPage = customUserRepository.findAll(
+            Page<Customer> userPage = customerRepository.findAll(
                     CustomUserSearchSpecifications.withId(id == null ? criteria.getId() : id)
                             .and(CustomUserSearchSpecifications.withFirstName(criteria.getFirstName()))
                             .and(CustomUserSearchSpecifications.withLastName(criteria.getLastName()))
@@ -286,8 +286,8 @@ public class CustomUserServiceImpl implements CustomUserService {
         try {
             log.info("CustomUserServiceImpl::deleteEmployeeById start:  id: {} ", id);
 
-            Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
-            Optional<Customer> optionalEmployee = customUserRepository.findById(id);
+            Optional<Customer> loggedInEmployee = customerRepository.getLoggedInEmployee();
+            Optional<Customer> optionalEmployee = customerRepository.findById(id);
             if (loggedInEmployee.isPresent() && optionalEmployee.isPresent() &&
                     !loggedInEmployee.get().getId().equals(optionalEmployee.get().getId())) {
                 throw new GenericException(Defs.NO_PERMISSION_TO_DELETE);
@@ -300,7 +300,7 @@ public class CustomUserServiceImpl implements CustomUserService {
             employee.setStatus(false);
 
             //soft deletion of employee
-            employee = customUserRepository.save(employee);
+            employee = customerRepository.save(employee);
             com.apu.user.security_oauth2.models.security.User user = employee.getOauthUser();
             user.setEnabled(false);
             userRepository.save(user);

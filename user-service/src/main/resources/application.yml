@@ -1,6 +1,6 @@
-spring:
-  application:
-    name: EMPLOYEE-SERVICE
+#spring:
+#  application:
+#    name: EMPLOYEE-SERVICE
 #eureka:
 #  client:
 #    register-with-eureka: true
@@ -10,5 +10,5 @@ spring:
 #  instance:
 #    hostname: localhost
 
-logging:
-  file: D:/elk_logs/microservice.log
+#logging:
+#  file: D:/elk_logs/microservice.log

@@ -19,7 +19,6 @@ CREATE TABLE CUSTOMERS(
     EDITED_BY	    bigint,
     EDIT_TIME       datetime,
     INTERNAL_VERSION bigint default 1,
-    oauth_user_id     bigint,
     primary key (ID)
 ) engine=InnoDB;
 
@@ -39,5 +38,16 @@ CREATE TABLE COUNTRY(
     NAME_URF	    varchar(255),
     CODE_2	        char(2),
     CODE_3	        char(3),
+    primary key (ID)
+) engine=InnoDB;
+
+drop table if exists CUSTOMER_ADDRESS;
+CREATE TABLE CUSTOMER_ADDRESS(
+    ID bigint not null auto_increment,
+    customer_id bigint not null,
+    address_type ENUM ('PRESENT_ADDRESS', 'PERMANENT_ADDRESS', 'BILLING_ADDRESS'),
+    details VARCHAR(255),
+    district_id bigint not null,
+
     primary key (ID)
 ) engine=InnoDB;

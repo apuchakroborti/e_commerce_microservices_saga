@@ -7,7 +7,7 @@ import com.apu.user.dto.response.PasswordChangeResponseDto;
 import com.apu.user.exceptions.EmployeeNotFoundException;
 import com.apu.user.exceptions.GenericException;
 import com.apu.user.entity.Customer;
-import com.apu.user.repository.CustomUserRepository;
+import com.apu.user.repository.CustomerRepository;
 import com.apu.user.security_oauth2.repository.AuthorityRepository;
 import com.apu.user.security_oauth2.repository.UserRepository;
 import com.apu.user.utils.Defs;
@@ -34,7 +34,7 @@ public class UserDetailService implements UserService, UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private CustomUserRepository customUserRepository;
+    private CustomerRepository customerRepository;
     @Autowired
     private AuthorityRepository authorityRepository;
 
@@ -85,7 +85,7 @@ public class UserDetailService implements UserService, UserDetailsService {
     public PasswordChangeResponseDto resetPassword(PasswordResetRequestDto passwordResetRequestDto) throws GenericException{
 
         try {
-            Optional<Customer> optionalEmployee = customUserRepository.findByEmail(passwordResetRequestDto.getUsername());
+            Optional<Customer> optionalEmployee = customerRepository.findByEmail(passwordResetRequestDto.getUsername());
             if (!optionalEmployee.isPresent() || optionalEmployee.get().getStatus().equals(false)) {
                 throw new EmployeeNotFoundException(Defs.USER_NOT_FOUND);
             }

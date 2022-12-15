@@ -42,7 +42,7 @@ public class Customer extends EntityCommon {
     @Column(name = "DATE_OF_BIRTH")
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "customUser", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Address> addressList = new ArrayList<>();
 
     @Column(name = "STATUS", nullable = false)

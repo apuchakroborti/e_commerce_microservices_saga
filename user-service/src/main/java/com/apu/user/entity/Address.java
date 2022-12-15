@@ -9,7 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER_ADDRESS")
+@Table(name = "CUSTOMER_ADDRESS")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,7 +20,7 @@ public class Address extends EntityCommon{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "custom_user_id")
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @Column(name = "address_type", nullable = false)

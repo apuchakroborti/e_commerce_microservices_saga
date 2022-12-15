@@ -9,9 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CustomUserRepository extends CrudRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
+public interface CustomerRepository extends CrudRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
 
-//    Employee findByEmail(@Param("email") String email);
 
     Optional<Customer> findByEmail(String email);
 

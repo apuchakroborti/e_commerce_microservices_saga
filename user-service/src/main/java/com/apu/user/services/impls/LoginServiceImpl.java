@@ -4,7 +4,7 @@ import com.apu.user.dto.CustomUserDto;
 import com.apu.user.dto.request.LoginRequestDto;
 import com.apu.user.entity.Customer;
 import com.apu.user.exceptions.GenericException;
-import com.apu.user.repository.CustomUserRepository;
+import com.apu.user.repository.CustomerRepository;
 import com.apu.user.security_oauth2.repository.UserRepository;
 import com.apu.user.services.LoginService;
 import com.apu.user.utils.Utils;
@@ -23,7 +23,7 @@ public class LoginServiceImpl implements LoginService {
     Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     @Autowired
-    CustomUserRepository customUserRepository;
+    CustomerRepository customerRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -40,7 +40,7 @@ public class LoginServiceImpl implements LoginService {
             Optional<com.apu.user.security_oauth2.models.security.User> optionalUser = userRepository.findByUsername(loginRequestDto.getUsername());
             if (optionalUser.isPresent()) {
                 if (passwordEncoder.matches(loginRequestDto.getPassword(), optionalUser.get().getPassword())) {
-                    Optional<Customer> optionalEmployee = customUserRepository.findByEmail(loginRequestDto.getUsername());
+                    Optional<Customer> optionalEmployee = customerRepository.findByEmail(loginRequestDto.getUsername());
                     if (optionalEmployee.isPresent()) {
                         Utils.copyProperty(optionalEmployee.get(), employeeDto);
                     } else {

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT DISTINCT user FROM Customer user " +
+    @Query("SELECT DISTINCT user FROM User user " +
             "INNER JOIN FETCH user.authorities AS userRole " +
             "WHERE user.username = :username")
     Optional<User> findByUsername(@Param("username") String username);
