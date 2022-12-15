@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestControllerAdvice
-public class PayRollExceptionHandler {
+public class PaymentExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

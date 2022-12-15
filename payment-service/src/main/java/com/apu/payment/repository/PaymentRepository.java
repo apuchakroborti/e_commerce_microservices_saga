@@ -21,6 +21,7 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
             "   and ( :customerId is null or payment.customerId = :customerId ) "+
             "   and ( :transactionId is null or payment.transactionId = :transactionId ) "+
             "   and ( :fromDate is null or payment.paymentDate >= :fromDate ) " +
+            "   and (:status is null or payment.status= :status ) "+
             "   and ( :toDate is null or payment.paymentDate <= :toDate ) ")
     Page<Payment> getCustomersPaymentInfoByIdAndDAteRange(
             @Param("id") Long id,
