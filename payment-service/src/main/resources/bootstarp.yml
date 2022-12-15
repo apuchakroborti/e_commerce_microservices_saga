@@ -1,5 +1,5 @@
-spring:
-  cloud:
-    config:
-      uri:
-        - http://localhost:9196
+#spring:
+#  cloud:
+#    config:
+#      uri:
+#        - http://localhost:9196

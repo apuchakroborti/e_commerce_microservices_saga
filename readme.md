@@ -5,8 +5,10 @@ $ create database e_commerce_saga_order;
 $ GRANT ALL PRIVILEGES ON e_commerce_saga_order.* TO 'apu'@'localhost';
 
 $ create database e_commerce_saga_payment;
- 
 $ GRANT ALL PRIVILEGES ON e_commerce_saga_payment.* TO 'apu'@'localhost';
+
+$ create database e_commerce_saga_product;
+$ GRANT ALL PRIVILEGES ON e_commerce_saga_product.* TO 'apu'@'localhost';
 
 This is a multi modules e-commerce management system project using microservices in SpringBoot based on saga pattern. \
 Steps to create multi modules project in intellijIdea:
