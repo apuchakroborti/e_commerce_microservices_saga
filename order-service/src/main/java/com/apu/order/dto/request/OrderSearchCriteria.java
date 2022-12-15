@@ -10,7 +10,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderSearchCriteria {
+    private Long id;
     private Long customerId;
-    private LocalDate fromDate;
-    private LocalDate toDate;
+    private LocalDate orderPlacingDate;
+    private LocalDate expectedDeliveryDate;
 }

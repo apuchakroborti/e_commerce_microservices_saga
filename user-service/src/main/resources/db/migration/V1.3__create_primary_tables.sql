@@ -1,19 +1,16 @@
-drop table if exists EMPLOYEE;
-drop table if exists EMPLOYEE_SALARY;
+drop table if exists CUSTOMERS;
 
-CREATE TABLE EMPLOYEE(
+CREATE TABLE CUSTOMERS(
     ID              bigint not null auto_increment,
     USER_ID         VARCHAR(255) NOT NULL UNIQUE,
     FIRST_NAME	    varchar(255) not null,
     LAST_NAME	    varchar(255),
     EMAIL	        varchar(128) not null,
     PHONE	        varchar(32),
-    TIN	            varchar(255),
-    NID	            varchar(255),
+    NID	            varchar(64),
     PASSPORT	    varchar(64),
-    DATE_OF_JOINING datetime not null,
-    DESIGNATION_ID	int,
-    ADDRESS_ID	    int,
+    DATE_OF_BIRTH   datetime not null,
+    OAUTH_USER_ID bigint not null,
 
     STATUS	        BOOLEAN DEFAULT TRUE,
 
@@ -26,21 +23,21 @@ CREATE TABLE EMPLOYEE(
     primary key (ID)
 ) engine=InnoDB;
 
-
-CREATE TABLE EMPLOYEE_SALARY(
+drop table if exists DISTRICT;
+CREATE TABLE DISTRICT(
     ID              bigint not null auto_increment,
-    EMPLOYEE_ID     bigint not null,
-    BASIC_SALARY    double not null,
-    GROSS_SALARY    double not null,
-    STATUS          boolean default true,
-    COMMENTS	    varchar(255),
-    FROM_DATE	    datetime not null,
-    TO_DATE	        datetime,
+    NAME	        varchar(255) not null,
+    NAME_URF	    varchar(255),
+    country_id     bigint not null,
+    primary key (ID)
+) engine=InnoDB;
 
-    CREATED_BY	    bigint NOT NULL,
-    CREATE_TIME	    datetime NOT NULL,
-    EDITED_BY	    bigint,
-    EDIT_TIME       datetime,
-    INTERNAL_VERSION bigint default 1,
+drop table if exists COUNTRY;
+CREATE TABLE COUNTRY(
+    ID              bigint not null auto_increment,
+    NAME	        varchar(255) not null,
+    NAME_URF	    varchar(255),
+    CODE_2	        char(2),
+    CODE_3	        char(3),
     primary key (ID)
 ) engine=InnoDB;

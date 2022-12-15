@@ -4,10 +4,15 @@ import com.apu.user.dto.AddressDto;
 import com.apu.user.dto.CreateUpdateCustomUserDto;
 import com.apu.user.dto.CustomUserDto;
 import com.apu.user.dto.request.CustomUserSearchCriteria;
+import com.apu.user.entity.Address;
+import com.apu.user.entity.Country;
 import com.apu.user.entity.Customer;
+import com.apu.user.entity.District;
 import com.apu.user.exceptions.EmployeeNotFoundException;
 import com.apu.user.exceptions.GenericException;
+import com.apu.user.repository.CountryRepository;
 import com.apu.user.repository.CustomUserRepository;
+import com.apu.user.repository.DistrictRepository;
 import com.apu.user.security_oauth2.models.security.Authority;
 import com.apu.user.security_oauth2.models.security.User;
 import com.apu.user.security_oauth2.repository.AuthorityRepository;
@@ -46,6 +51,8 @@ public class CustomUserServiceImpl implements CustomUserService {
     private final CustomUserRepository customUserRepository;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
+    private final CountryRepository countryRepository;
+    private final DistrictRepository districtRepository;
 
     @Qualifier("userPasswordEncoder")
     private final PasswordEncoder passwordEncoder;
@@ -60,6 +67,8 @@ public class CustomUserServiceImpl implements CustomUserService {
     CustomUserServiceImpl(CustomUserRepository customUserRepository,
                           UserRepository userRepository,
                           AuthorityRepository authorityRepository,
+                          CountryRepository countryRepository,
+                          DistrictRepository districtRepository,
                           @Lazy RestTemplate template,
                           @Qualifier("userPasswordEncoder")PasswordEncoder passwordEncoder){
         this.customUserRepository = customUserRepository;
@@ -67,6 +76,8 @@ public class CustomUserServiceImpl implements CustomUserService {
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.template = template;
+        this.countryRepository = countryRepository;
+        this.districtRepository = districtRepository;
     }
 
 
@@ -74,10 +85,10 @@ public class CustomUserServiceImpl implements CustomUserService {
     @Transactional
     public User addOauthUser(Customer customer, String password) throws GenericException {
         try {
-            log.info("EmployeeServiceImpl::addOauthUser start: email: {}", customer.getEmail());
+            log.info("CustomUserServiceImpl::addOauthUser start: email: {}", customer.getEmail());
             Optional<User> optionalUser = userRepository.findByUsername(customer.getEmail());
             if (optionalUser.isPresent()) {
-                log.error("EmployeeServiceImpl::addOauthUser user already exists: email: {}", customer.getEmail());
+                log.error("CustomUserServiceImpl::addOauthUser user already exists: email: {}", customer.getEmail());
                 throw new GenericException(Defs.USER_ALREADY_EXISTS);
             }
 
@@ -90,13 +101,13 @@ public class CustomUserServiceImpl implements CustomUserService {
             user.setPassword(passwordEncoder.encode(password));
 
             user = userRepository.save(user);
-            log.debug("EmployeeServiceImpl::addOauthUser user: {}", user.toString());
-            log.info("EmployeeServiceImpl::addOauthUser end: email: {}", customer.getEmail());
+            log.debug("CustomUserServiceImpl::addOauthUser user: {}", user.toString());
+            log.info("CustomUserServiceImpl::addOauthUser end: email: {}", customer.getEmail());
             return user;
         }catch (GenericException e){
             throw e;
         }catch (Exception e){
-            log.error("EmployeeServiceImpl::addOauthUser Exception occurred while adding oauth user email:{} message: {}", customer.getEmail(), e.getMessage());
+            log.error("CustomUserServiceImpl::addOauthUser Exception occurred while adding oauth user email:{} message: {}", customer.getEmail(), e.getMessage());
             throw new GenericException("Error occurred while creating oauth user!");
         }
     }
@@ -104,71 +115,55 @@ public class CustomUserServiceImpl implements CustomUserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CustomUserDto signUpUser(CreateUpdateCustomUserDto createUpdateCustomUserDto) throws GenericException {
         try {
-            log.info("EmployeeServiceImpl::enrollEmployee service start: email: {}", createUpdateCustomUserDto.getEmail());
+            log.info("CustomUserServiceImpl::signUpUser service start: email: {}", createUpdateCustomUserDto.getEmail());
             Optional<Customer> optionalCustomUser = customUserRepository.findByEmail(createUpdateCustomUserDto.getEmail());
             if (optionalCustomUser.isPresent()){
-                log.error("EmployeeServiceImpl::enrollEmployee service:  userId: {} already exists", createUpdateCustomUserDto.getUserId());
+                log.error("CustomUserServiceImpl::signUpUser service:  userId: {} already exists", createUpdateCustomUserDto.getUserId());
                 throw new GenericException(Defs.USER_ALREADY_EXISTS);
             }
 
             Customer customer = new Customer();
             Utils.copyProperty(createUpdateCustomUserDto, customer);
 
+            if(!createUpdateCustomUserDto.getPassword().equals(createUpdateCustomUserDto.getConfirmPassword())){
+                throw new GenericException("Password mismatched!");
+            }
+
             User user = addOauthUser(customer, createUpdateCustomUserDto.getPassword());
-            log.info("EmployeeServiceImpl::enrollEmployee service:  user: {} ", user.toString());
+            log.info("CustomUserServiceImpl::signUpUser service:  user: {} ", user.toString());
 
             customer.setOauthUser(user);
             customer.setStatus(true);
 
 
-            //set the address
+            //TODO need to set the addresses
             List<AddressDto> addressDtoList = createUpdateCustomUserDto.getAddressDtoList();
+            List<Address> addressList = new ArrayList<>();
+            for(AddressDto addressDto: addressDtoList){
+                Address address = new Address();
+                Utils.copyProperty(addressDto, address);
+                Optional<Country> optionalCountry = countryRepository.findById(addressDto.getDistrict().getCountry().getId());
+                if(!optionalCountry.isPresent()){
+                    throw new GenericException("Country not found!");
+                }
+                Optional<District> districtOptional = districtRepository.findById(addressDto.getDistrict().getId());
+                if(!districtOptional.isPresent()){
+                    throw new GenericException("District not found!");
+                }
+                District district = districtOptional.get();
+                address.setDistrict(district);
+                addressList.add(address);
+            }
+            customer.setAddressList(addressList);
 
             customer.setCreatedBy(1l);
             customer.setCreateTime(LocalDateTime.now());
 
             customer = customUserRepository.save(customer);
-            log.debug("EmployeeServiceImpl::enrollEmployee service:  employee: {} ", customer.toString());
-
-           /* //generate payslip for the current financial year
-            MonthlyPaySlipJoiningRequestDto requestDto = new MonthlyPaySlipJoiningRequestDto();
-            requestDto.setEmployeeId(customUser.getId());
-            requestDto.setJoiningDate(customUser.getDateOfJoining());*/
-
-
-           /* try{
-                ResponseEntity<APIResponse<Boolean>> apiResponse = null;
-                ParameterizedTypeReference<APIResponse<Boolean>> typeRef = new ParameterizedTypeReference<APIResponse<Boolean>>() {
-                };
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-
-                headers = new HttpHeaders();
-                headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                HttpEntity<MonthlyPaySlipJoiningRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
-                apiResponse = template.exchange(GENERATE_PAYSLIP_WHILE_JOINING, HttpMethod.POST, requestEntity, typeRef);
-                log.info("EmployeeServiceImpl::enrollEmployee service: apiResponse: {}", Utils.jsonAsString(apiResponse));
-
-                if(!apiResponse.getStatusCode().equals(HttpStatus.CREATED)){
-                    throw new GenericException("Payslip generation while joining not succeed!");
-                }else{
-                    if(apiResponse.hasBody() && !apiResponse.getBody().getStatus().equals("SUCCESS")){
-                        throw new GenericException("Payslip generation while joining not succeed!");
-                    }
-                }
-            }catch (Exception e){
-                log.error("EmployeeServiceImpl::enrollEmployee Exception occurred while generating payslip the current financial year, message: {}", e.getMessage());
-                throw new GenericException("Exception occurred while generating payslip the current financial year, message:"+e.getMessage());
-            }*/
-
-            log.debug("EmployeeServiceImpl::enrollEmployee service:  monthly payslip generation successful employee id: {}, email: {} ", customer.getId(), customer.getEmail());
 
             CustomUserDto customUserDto = new CustomUserDto();
             Utils.copyProperty(customer, customUserDto);
-            log.info("EmployeeServiceImpl::enrollEmployee service end: userId: {} and email: {}", createUpdateCustomUserDto.getUserId(), createUpdateCustomUserDto.getEmail());
+            log.info("CustomUserServiceImpl::signUpUser service end: userId: {} and email: {}", createUpdateCustomUserDto.getUserId(), createUpdateCustomUserDto.getEmail());
             return customUserDto;
         }catch (GenericException e){
             throw e;
@@ -183,15 +178,15 @@ public class CustomUserServiceImpl implements CustomUserService {
     @Override
     public CustomUserDto findByUsername(String username) throws GenericException{
         try {
-            log.debug("EmployeeServiceImpl::findByUsername start:  username: {} ", username);
+            log.debug("CustomUserServiceImpl::findByUsername start:  username: {} ", username);
             Optional<Customer> optionalEmployee = customUserRepository.findByEmail(username);
             if (!optionalEmployee.isPresent() || optionalEmployee.get().getStatus().equals(false)) {
-                log.debug("EmployeeServiceImpl::findByUsername user not found by  username: {} ", username);
+                log.debug("CustomUserServiceImpl::findByUsername user not found by  username: {} ", username);
                 return null;
             }
             CustomUserDto employeeDto = new CustomUserDto();
             Utils.copyProperty(optionalEmployee.get(), employeeDto);
-            log.debug("EmployeeServiceImpl::findByUsername end:  username: {} ", username);
+            log.debug("CustomUserServiceImpl::findByUsername end:  username: {} ", username);
             return employeeDto;
         }catch (Exception e){
             log.error("Error while finding employee by username: {}", username);
@@ -199,18 +194,18 @@ public class CustomUserServiceImpl implements CustomUserService {
         }
     }
     @Override
-    public CustomUserDto findEmployeeById(Long id) throws GenericException{
+    public CustomUserDto findCustomerById(Long id) throws GenericException{
         try {
-            log.info("EmployeeServiceImpl::findEmployeeById start:  id: {} ", id);
+            log.info("CustomUserServiceImpl::findEmployeeById start:  id: {} ", id);
             Optional<Customer> optionalUser = customUserRepository.findById(id);
 
             if (!optionalUser.isPresent() || optionalUser.get().getStatus().equals(false)) {
-                log.debug("EmployeeServiceImpl::findEmployeeById employee not found by id: {} ", id);
+                log.debug("CustomUserServiceImpl::findEmployeeById employee not found by id: {} ", id);
                 throw new EmployeeNotFoundException(Defs.USER_NOT_FOUND);
             }
             CustomUserDto employeeDto = new CustomUserDto();
             Utils.copyProperty(optionalUser.get(), employeeDto);
-            log.info("EmployeeServiceImpl::findEmployeeById end: id: {} ", id);
+            log.info("CustomUserServiceImpl::findEmployeeById end: id: {} ", id);
             return employeeDto;
 
         }catch (Exception e){
@@ -220,9 +215,9 @@ public class CustomUserServiceImpl implements CustomUserService {
     }
 
     @Override
-    public CustomUserDto updateEmployeeById(Long id, CustomUserDto employeeDto) throws GenericException{
+    public CustomUserDto updateCustomerById(Long id, CustomUserDto employeeDto) throws GenericException{
         try {
-            log.debug("EmployeeServiceImpl::updateEmployeeById start:  id: {} ", id);
+            log.debug("CustomUserServiceImpl::updateEmployeeById start:  id: {} ", id);
 
             Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
             if (loggedInEmployee.isPresent() && !loggedInEmployee.get().getId().equals(id)) {
@@ -231,7 +226,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 
             Optional<Customer> optionalEmployee = customUserRepository.findById(id);
             if (!optionalEmployee.isPresent() || optionalEmployee.get().getStatus().equals(false)){
-                log.debug("EmployeeServiceImpl::updateEmployeeById employee not found by id: {} ", id);
+                log.debug("CustomUserServiceImpl::updateEmployeeById employee not found by id: {} ", id);
                 throw new EmployeeNotFoundException(Defs.USER_NOT_FOUND);
             }
 
@@ -244,10 +239,10 @@ public class CustomUserServiceImpl implements CustomUserService {
                 employee.setLastName(employeeDto.getLastName());
             }
             employee = customUserRepository.save(employee);
-            log.debug("EmployeeServiceImpl::updateEmployeeById employee update successful:  employee: {} ", employee.toString());
+            log.debug("CustomUserServiceImpl::updateEmployeeById employee update successful:  employee: {} ", employee.toString());
 
             Utils.copyProperty(employee, employeeDto);
-            log.debug("EmployeeServiceImpl::updateEmployeeById end:  id: {} ", id);
+            log.debug("CustomUserServiceImpl::updateEmployeeById end:  id: {} ", id);
 
             return employeeDto;
         }catch (Exception e){
@@ -257,9 +252,9 @@ public class CustomUserServiceImpl implements CustomUserService {
     }
 
     @Override
-    public Page<Customer> getEmployeeList(CustomUserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException{
+    public Page<Customer> getCustomerList(CustomUserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException{
         try {
-            log.info("EmployeeServiceImpl::getEmployeeList start:  criteria: {} ", Utils.jsonAsString(criteria));
+            log.info("CustomUserServiceImpl::getEmployeeList start:  criteria: {} ", Utils.jsonAsString(criteria));
 
             Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
             Long id = null;
@@ -276,20 +271,20 @@ public class CustomUserServiceImpl implements CustomUserService {
                             .and(CustomUserSearchSpecifications.withStatus(true))
                     , pageable
             );
-            log.debug("EmployeeServiceImpl::getEmployeeList number of elements: {} ", userPage.getTotalElements());
+            log.debug("CustomUserServiceImpl::getEmployeeList number of elements: {} ", userPage.getTotalElements());
 
-            log.info("EmployeeServiceImpl::getEmployeeList end");
+            log.info("CustomUserServiceImpl::getEmployeeList end");
             return userPage;
         }catch (Exception e){
-            log.error("EmployeeServiceImpl::getEmployeeList exception occurred while fetching user list!");
+            log.error("CustomUserServiceImpl::getEmployeeList exception occurred while fetching user list!");
             throw new GenericException("exception occurred while fetching user list!");
         }
     }
 
     @Override
-    public Boolean deleteEmployeeById(Long id) throws GenericException{
+    public Boolean deleteCustomerById(Long id) throws GenericException{
         try {
-            log.info("EmployeeServiceImpl::deleteEmployeeById start:  id: {} ", id);
+            log.info("CustomUserServiceImpl::deleteEmployeeById start:  id: {} ", id);
 
             Optional<Customer> loggedInEmployee = customUserRepository.getLoggedInEmployee();
             Optional<Customer> optionalEmployee = customUserRepository.findById(id);
@@ -310,7 +305,7 @@ public class CustomUserServiceImpl implements CustomUserService {
             user.setEnabled(false);
             userRepository.save(user);
 
-            log.info("EmployeeServiceImpl::deleteEmployeeById end:  id: {} ", id);
+            log.info("CustomUserServiceImpl::deleteEmployeeById end:  id: {} ", id);
             return  true;
         } catch (GenericException e){
             throw e;

@@ -14,8 +14,8 @@ public interface CustomUserService {
     User addOauthUser(Customer employee, String password) throws GenericException;
 
     CustomUserDto findByUsername(String username) throws GenericException;
-    CustomUserDto findEmployeeById(Long id) throws GenericException;
-    CustomUserDto updateEmployeeById(Long id, CustomUserDto employeeBean) throws GenericException;
-    Page<Customer> getEmployeeList(CustomUserSearchCriteria criteria, Pageable pageable) throws GenericException;
-    Boolean  deleteEmployeeById(Long id) throws GenericException;
+    CustomUserDto findCustomerById(Long id) throws GenericException;
+    CustomUserDto updateCustomerById(Long id, CustomUserDto employeeBean) throws GenericException;
+    Page<Customer> getCustomerList(CustomUserSearchCriteria criteria, Pageable pageable) throws GenericException;
+    Boolean deleteCustomerById(Long id) throws GenericException;
 }

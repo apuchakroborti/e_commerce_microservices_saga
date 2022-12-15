@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,6 +29,7 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<APIResponse> addNewProduct(@Valid @RequestBody ProductDto productDto) throws GenericException {
         log.info("ProductController::addNewProduct request: {}", Utils.jsonAsString(productDto));
 
@@ -46,15 +48,16 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<APIResponse> getAllProductsBySearchCriteria(ProductSearchCriteria criteria, @PageableDefault(value = 12) Pageable pageable) throws GenericException {
         log.info("ProductController::getAllProductsBySearchCriteria request: {}", Utils.jsonAsString(criteria));
-
-        Page<Product> providentFundPage = productService.getAllProductsWithSearchCriteria(criteria, pageable);
-        List<ProductDto> productDtoList = Utils.toDtoList(providentFundPage, ProductDto.class);
+        Page<ProductDto> productDtoPage = productService.getAllProductsWithSearchCriteria(criteria, pageable);
 
         APIResponse<List<ProductDto>> responseDTO = APIResponse
                 .<List<ProductDto>>builder()
                 .status("SUCCESS")
-                .results(productDtoList)
-                .pagination(new Pagination(providentFundPage.getTotalElements(), providentFundPage.getNumberOfElements(), providentFundPage.getNumber(), providentFundPage.getSize()))
+                .results(productDtoPage.getContent())
+                .pagination(new Pagination(productDtoPage.getTotalElements(),
+                        productDtoPage.getNumberOfElements(),
+                        productDtoPage.getNumber(),
+                        productDtoPage.getSize()))
                 .build();
 
         log.info("ProductController::getAllProductsBySearchCriteria response: {}", Utils.jsonAsString(responseDTO));

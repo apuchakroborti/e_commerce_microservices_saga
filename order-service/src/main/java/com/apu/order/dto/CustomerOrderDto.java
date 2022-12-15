@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDto extends CommonDto {
+public class CustomerOrderDto extends CommonDto {
     private Long id;
 
     @Column(name = "CUSTOM_USER_ID", nullable = false)

@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "COUNTRY")
@@ -27,4 +26,7 @@ public class Country {
 
     @Column(name = "code_3")
     private String code3;
+
+    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
+    private List<District> districtList = new ArrayList<>();
 }

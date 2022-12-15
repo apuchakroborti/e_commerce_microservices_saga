@@ -2,9 +2,9 @@ package com.apu.payment.handler;
 
 import com.apu.payment.dto.APIResponse;
 import com.apu.payment.dto.ErrorDto;
-import com.apu.payment.exceptions.EmployeeNotFoundException;
+import com.apu.payment.exceptions.CustomerNotFoundException;
 import com.apu.payment.exceptions.GenericException;
-import com.apu.payment.exceptions.PayRollNotFoundException;
+import com.apu.payment.exceptions.PaymentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,15 +41,15 @@ public class PayRollExceptionHandler {
         return serviceResponse;
     }
 
-    @ExceptionHandler(PayRollNotFoundException.class)
-    public APIResponse<?> handlerPayRollNotFoundException(PayRollNotFoundException exception){
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public APIResponse<?> handlerPayRollNotFoundException(PaymentNotFoundException exception){
         APIResponse<?> serviceResponse = new APIResponse<>();
         serviceResponse.setStatus("FAILED");
         serviceResponse.setErrors(Collections.singletonList(new ErrorDto("", exception.getMessage())));
         return serviceResponse;
     }
-    @ExceptionHandler(EmployeeNotFoundException.class)
-    public APIResponse<?> handlerEmployeeNotFoundException(EmployeeNotFoundException exception){
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public APIResponse<?> handlerEmployeeNotFoundException(CustomerNotFoundException exception){
         APIResponse<?> serviceResponse = new APIResponse<>();
         serviceResponse.setStatus("FAILED");
         serviceResponse.setErrors(Collections.singletonList(new ErrorDto("", exception.getMessage())));

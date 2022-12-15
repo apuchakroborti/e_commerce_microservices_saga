@@ -1,10 +1,12 @@
 package com.apu.order.services.impls;
 
-import com.apu.order.dto.OrderDto;
-import com.apu.order.entity.Order;
+import com.apu.order.dto.CustomerOrderDto;
+import com.apu.order.dto.request.OrderSearchCriteria;
+import com.apu.order.entity.CustomerOrder;
 import com.apu.order.exceptions.GenericException;
 import com.apu.order.repository.OrderRepository;
 import com.apu.order.services.OrderService;
+import com.apu.order.specifications.OrderSearchSpecifications;
 import com.apu.order.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -27,12 +30,13 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderDto placeOrder(OrderDto orderDto) throws GenericException{
+    public CustomerOrderDto placeOrder(CustomerOrderDto orderDto) throws GenericException{
         try {
             log.info("OrderServiceImpl::placeOrder service start: employee Id: {}",orderDto.getCustomUserId());
 
 
-            Order order = new Order();
+            //TODO check the products are available or not
+            CustomerOrder order = new CustomerOrder();
             Utils.copyProperty(orderDto, order);
 
             order.setCreatedBy(1L);
@@ -54,15 +58,28 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<Order> getAllOrderInfoByUserId(Long userId, Pageable pageable) throws GenericException{
+    public Page<CustomerOrderDto> getAllOrderInfoBySearchCriteria(OrderSearchCriteria criteria, Pageable pageable) throws GenericException{
         try{
-            log.info("OrderServiceImpl::getAllOrderInfoByUserId service start: employee Id: {}", userId);
-
-            log.info("OrderServiceImpl::getAllOrderInfoByUserId service end: employee Id: {}", userId);
-            return null;
+            log.info("OrderServiceImpl::getAllOrderInfoByUserId service start");
+            Page<CustomerOrderDto> customerOrderDtoPage = orderRepository.findAll(
+                    OrderSearchSpecifications.withId(criteria.getId())
+                    .and(OrderSearchSpecifications.withCustomerId(criteria.getCustomerId()))
+                    .and(OrderSearchSpecifications.withOrderPlacingDate(criteria.getOrderPlacingDate()))
+                    .and(OrderSearchSpecifications.withExpectedDeliveryDate(criteria.getExpectedDeliveryDate()))
+                    , pageable
+            ).map(new Function<CustomerOrder, CustomerOrderDto>() {
+                @Override
+                public CustomerOrderDto apply(CustomerOrder entity) {
+                    CustomerOrderDto dto = new CustomerOrderDto();
+                    Utils.copyProperty(entity, dto);
+                    return dto;
+                }
+            });
+            log.info("OrderServiceImpl::getAllOrderInfoByUserId service end");
+            return customerOrderDtoPage;
         }catch (Exception e){
-            log.error("OrderServiceImpl::getAllOrderInfoByUserId: Exception occurred while getAllTaxInfoByEmployeeId: employee Id: {}", userId);
-            throw new GenericException("Exception occurred while getAllTaxInfoByEmployeeId !");
+            log.error("OrderServiceImpl::getAllOrderInfoByUserId: Exception occurred while getAllOrderBySearchCriteria");
+            throw new GenericException("Exception occurred while Exception occurred while getAllOrderBySearchCriteria !");
         }
 
     }

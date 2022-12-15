@@ -12,7 +12,6 @@ import com.apu.user.services.CustomUserService;
 import com.apu.user.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,21 +25,20 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/customer")
 @AllArgsConstructor
 @Slf4j
 public class CustomerController {
 
     private final UserService userService;
-    private final CustomUserService employeeService;
+    private final CustomUserService customUserService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<APIResponse> signUpUser(@Valid @RequestBody CreateUpdateCustomUserDto customUserDto) throws GenericException {
-        log.info("EmployeeController::enrollEmployee request body {}", Utils.jsonAsString(customUserDto));
+        log.info("CustomerController::signUpUser request body {}", Utils.jsonAsString(customUserDto));
 
-        CustomUserDto employeeResponseDTO = employeeService.signUpUser(customUserDto);
-        log.debug(CustomerController.class.getName()+"::enrollEmployee response {}", Utils.jsonAsString(employeeResponseDTO));
+        CustomUserDto employeeResponseDTO = customUserService.signUpUser(customUserDto);
+        log.debug(CustomerController.class.getName()+"::signUpUser response {}", Utils.jsonAsString(employeeResponseDTO));
 
         //Builder Design pattern
         APIResponse<CustomUserDto> responseDTO = APIResponse
@@ -49,7 +47,7 @@ public class CustomerController {
                 .results(employeeResponseDTO)
                 .build();
 
-        log.info("EmployeeController::enrollEmployee response {}", Utils.jsonAsString(responseDTO));
+        log.info("CustomerController::signUpUser response {}", Utils.jsonAsString(responseDTO));
 
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
@@ -57,9 +55,9 @@ public class CustomerController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<APIResponse> searchEmployee(CustomUserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException {
-        log.info("EmployeeController::searchEmployee start...");
+        log.info("CustomerController::searchEmployee start...");
 
-        Page<Customer>  employeePage = employeeService.getEmployeeList(criteria, pageable);
+        Page<Customer>  employeePage = customUserService.getCustomerList(criteria, pageable);
 
         List<CustomUserDto> employeeDtoList = Utils.toDtoList(employeePage, CustomUserDto.class);
 
@@ -70,16 +68,16 @@ public class CustomerController {
                 .pagination(new Pagination(employeePage.getTotalElements(), employeePage.getNumberOfElements(), employeePage.getNumber(), employeePage.getSize()))
                 .build();
 
-        log.info("EmployeeController::searchEmployee end");
+        log.info("CustomerController::searchEmployee end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<APIResponse> getEmployeeById(@PathVariable(name = "id") Long id ) throws GenericException {
-        log.info("EmployeeController::getEmployeeById start...");
+        log.info("CustomerController::getEmployeeById start...");
 
-        CustomUserDto employeeDto = employeeService.findEmployeeById(id);
+        CustomUserDto employeeDto = customUserService.findCustomerById(id);
 
         APIResponse<CustomUserDto> responseDTO = APIResponse
                 .<CustomUserDto>builder()
@@ -87,7 +85,7 @@ public class CustomerController {
                 .results(employeeDto)
                 .build();
 
-        log.info("EmployeeController::getEmployeeById end");
+        log.info("CustomerController::getEmployeeById end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
@@ -95,9 +93,9 @@ public class CustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse>  updateEmployeeById(@PathVariable(name = "id") Long id, @RequestBody CustomUserDto employeeBean) throws GenericException {
 
-        log.info("EmployeeController::updateEmployeeById start...");
+        log.info("CustomerController::updateEmployeeById start...");
 
-        CustomUserDto employeeDto = employeeService.updateEmployeeById(id, employeeBean);
+        CustomUserDto employeeDto = customUserService.updateCustomerById(id, employeeBean);
 
         APIResponse<CustomUserDto> responseDTO = APIResponse
                 .<CustomUserDto>builder()
@@ -105,16 +103,16 @@ public class CustomerController {
                 .results(employeeDto)
                 .build();
 
-        log.info("EmployeeController::updateEmployeeById end");
+        log.info("CustomerController::updateEmployeeById end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse> deleteEmployeeById(@PathVariable(name = "id") Long id) throws GenericException {
-        log.info("EmployeeController::deleteEmployeeById start...");
+        log.info("CustomerController::deleteEmployeeById start...");
 
-        Boolean res = employeeService.deleteEmployeeById(id);
+        Boolean res = customUserService.deleteCustomerById(id);
 
         APIResponse<Boolean> responseDTO = APIResponse
                 .<Boolean>builder()
@@ -122,14 +120,14 @@ public class CustomerController {
                 .results(res)
                 .build();
 
-        log.info("EmployeeController::deleteEmployeeById end");
+        log.info("CustomerController::deleteEmployeeById end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping("/update-password")
     public ResponseEntity<APIResponse> updatePassword(@RequestBody PasswordChangeRequestDto passwordChangeRequestDto) throws GenericException {
-        log.info("EmployeeController::updatePassword start...");
+        log.info("CustomerController::updatePassword start...");
 
         PasswordChangeResponseDto res = userService.changeUserPassword(passwordChangeRequestDto);
 
@@ -139,14 +137,14 @@ public class CustomerController {
                 .results(res)
                 .build();
 
-        log.info("EmployeeController::updatePassword end");
+        log.info("CustomerController::updatePassword end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping("/reset-password")
     public ResponseEntity<APIResponse>  resetPassword(@RequestBody PasswordResetRequestDto passwordResetRequestDto) throws GenericException {
-        log.info("EmployeeController::resetPassword start...");
+        log.info("CustomerController::resetPassword start...");
 
         PasswordChangeResponseDto res = userService.resetPassword(passwordResetRequestDto);
 
@@ -156,7 +154,7 @@ public class CustomerController {
                 .results(res)
                 .build();
 
-        log.info("EmployeeController::resetPassword end");
+        log.info("CustomerController::resetPassword end");
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 

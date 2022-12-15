@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Data
-public class EntityCommon implements Serializable {
+public class EntityCommon {
     @Column(name = "CREATED_BY" )
     private Long createdBy;
 

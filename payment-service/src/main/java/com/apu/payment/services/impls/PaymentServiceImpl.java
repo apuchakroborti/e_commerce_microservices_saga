@@ -51,7 +51,15 @@ public class PaymentServiceImpl implements PaymentService {
     public Page<Payment> getPaymentInfoBySearchCriteria(PaymentSearchCriteria criteria, Pageable pageable) throws GenericException{
         try {
             Page<Payment> employeeMonthlyPaySlipPage = paymentRepository.getCustomersPaymentInfoByIdAndDAteRange(
-                    criteria.getFromDate(), criteria.getToDate(), criteria.getEmployeeId(), pageable);
+                    criteria.getId()
+                    , criteria.getOrderId()
+                    , criteria.getCustomerId()
+                    , criteria.getPaymentMedium()
+                    , criteria.getTransactionId()
+                    ,true
+                    , criteria.getFromDate()
+                    , criteria.getToDate()
+                    , pageable);
             return employeeMonthlyPaySlipPage;
         }catch (Exception e){
             log.error("Error occurred while fetching payment info!");

@@ -1,24 +1,18 @@
-drop table if exists EMPLOYEE_MONTHLY_PAY_SLIP;
-CREATE TABLE EMPLOYEE_MONTHLY_PAY_SLIP(
+drop table if exists PAYMENTS;
+CREATE TABLE PAYMENTS(
     ID                  bigint not null auto_increment,
-    EMPLOYEE_ID         bigint not null,
-    GROSS_SALARY        double not null,
-    BASIC_SALARY        double not null,
-    HOUSE_RENT	        double,
-    CONVEYANCE	        double,
-    MEDICAL_ALLOWANCE	double,
-    DUE	                double,
-    PF_DEDUCTION        double,
-    TAX_DEDUCTION	    double,
-    ARREARS	            double,
-    FESTIVAL_BONUS      double,
-    INCENTIVE_BONUS	    double,
-    OTHER_PAY	        double,
-    NET_PAYMENT         double,
-    STATUS              boolean default true,
-    COMMENTS	        varchar(255),
-    FROM_DATE	        datetime not null,
-    TO_DATE	            datetime not null,
+    ORDER_ID            bigint not null,
+    CUSTOMER_ID         bigint not null,
+    AMOUNT              double not null,
+    DUE                 double,
+
+    COMMENTS            varchar(255),
+    PAYMENT_MEDIUM ENUM ('BKASH', 'ROCKET', 'NAGAD', 'CREDIT_CARD', 'DEBIT_CARD') not null,
+
+    TRANSACTION_ID	    varchar(255),
+    PAYMENT_DATE	    datetime not null,
+
+    STATUS              boolean not null,
 
     CREATED_BY	        bigint NOT NULL,
     CREATE_TIME	        datetime NOT NULL,

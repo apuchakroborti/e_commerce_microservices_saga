@@ -19,6 +19,9 @@ public class ImageUrls {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private String url;
+    @Column(name = "IMAGE_URL")
+    private String imageUrl;
+
+    @Column(name = "IMAGE_TYPE")
     private ImageType imageType;
 }

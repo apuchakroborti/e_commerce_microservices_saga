@@ -5,6 +5,7 @@ import com.apu.product.entity.Product;
 import com.apu.product.exceptions.GenericException;
 import com.apu.product.repository.ProductRepository;
 import com.apu.product.services.ProductService;
+import com.apu.product.specifications.ProductSpecifications;
 import com.apu.product.utils.Utils;
 import com.apu.product.dto.ProductDto;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -42,11 +45,30 @@ public class ProductServiceImpl implements ProductService {
 
     }
     @Override
-    public Page<Product> getAllProductsWithSearchCriteria(ProductSearchCriteria criteria, Pageable pageable) throws GenericException{
-        Page<Product> productPage = productRepository.findAll(null,
+    public Page<ProductDto> getAllProductsWithSearchCriteria(ProductSearchCriteria criteria, Pageable pageable) throws GenericException{
+        Page<Product> productPage = productRepository.findAll(
+                ProductSpecifications.withId(criteria.getProductId())
+                .and(ProductSpecifications.withProductCode(criteria.getProductCode()))
+                .and(ProductSpecifications.withBarCode(criteria.getBarCode()))
+                .and(ProductSpecifications.withQrCode(criteria.getQrCode()))
+                .and(ProductSpecifications.withProductPriceGreaterThanEqual(criteria.getProductPriceRangeLow()))
+                .and(ProductSpecifications.withProductPriceLessThanEqual(criteria.getProductPriceRangeHigh()))
+                .and(ProductSpecifications.withDiscountPriceGreaterThanEqual(criteria.getDiscountPercentageRangeLow()))
+                .and(ProductSpecifications.withDiscountPriceLessThanEqual(criteria.getDiscountPercentageRangeHigh()))
+                .and(ProductSpecifications.withStatus(true))
+                ,
                 pageable);
 
-        return productPage;
+        Page<ProductDto> productDtoPage = productPage.map(new Function<Product, ProductDto>() {
+            @Override
+            public ProductDto apply(Product entity) {
+                ProductDto dto = new ProductDto();
+                Utils.copyProperty(entity, dto);
+                return dto;
+            }
+        });
+
+        return productDtoPage;
     }
 
 }

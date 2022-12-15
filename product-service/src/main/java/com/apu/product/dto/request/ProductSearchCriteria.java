@@ -10,7 +10,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductSearchCriteria {
-    private Long employeeId;
+    private Long productId;
+    private String productCode;
+    private String barCode;
+    private String qrCode;
+    private Double productPriceRangeHigh;
+    private Double productPriceRangeLow;
+    private Double discountPercentageRangeLow;
+    private Double discountPercentageRangeHigh;
     private LocalDate fromDate;
     private LocalDate toDate;
 }

@@ -13,5 +13,5 @@ import java.util.Optional;
 
 public interface ProductService {
     ProductDto addNewProduct(ProductDto productDto) throws GenericException;
-    Page<Product> getAllProductsWithSearchCriteria(ProductSearchCriteria criteria, Pageable pageable) throws GenericException;
+    Page<ProductDto> getAllProductsWithSearchCriteria(ProductSearchCriteria criteria, Pageable pageable) throws GenericException;
 }

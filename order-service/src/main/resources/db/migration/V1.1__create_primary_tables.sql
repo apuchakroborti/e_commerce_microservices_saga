@@ -1,17 +1,31 @@
-drop table if exists EMPLOYEE_TAX_DEPOSIT;
-CREATE TABLE EMPLOYEE_TAX_DEPOSIT(
-    ID              bigint not null auto_increment,
-    EMPLOYEE_ID     bigint not null,
-    AMOUNT          double not null,
-    CHALAN_NO       varchar(64) not null,
+drop table if exists ORDERS;
+CREATE TABLE ORDERS(
+    ID                  bigint not null auto_increment,
+    CUSTOMER_ID         bigint not null,
+    ORDER_PLACING_DATE	datetime not null,
+    EXPECTED_DELIVERY_DATE	datetime not null,
+
+    ORDER_DETAILS       varchar(255) not null,
+    TOTAL_AMOUNT        double not null,
+    PAYMENT_AMOUNT      double,
+
     COMMENTS	    varchar(255),
-    FROM_DATE	    datetime not null,
-    TO_DATE	        datetime not null,
+    STATUS          boolean not null,
 
     CREATED_BY	    bigint NOT NULL,
     CREATE_TIME	    datetime NOT NULL,
     EDITED_BY	    bigint,
     EDIT_TIME       datetime,
     INTERNAL_VERSION bigint default 1,
+    primary key (ID)
+) engine=InnoDB;
+
+
+drop table if exists PRODUCT_SUMMARY;
+CREATE TABLE PRODUCT_SUMMARY(
+    ID                  bigint not null auto_increment,
+    PRODUCT_NAME        VARCHAR(128) NOT NULL,
+    PRODUCT_PRICE       double not null,
+    order_id            bigint not null,
     primary key (ID)
 ) engine=InnoDB;

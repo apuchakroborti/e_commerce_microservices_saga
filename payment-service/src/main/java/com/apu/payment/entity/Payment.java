@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "PAYMENTS")
-public class Payment{
+public class Payment extends EntityCommon{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -20,21 +20,23 @@ public class Payment{
     @Column(name = "ORDER_ID", nullable = false)
     private Long orderId;
 
-    @Column(name = "customer_id")
+    @Column(name = "customer_id", nullable = false)
     private Long customerId;
 
     @Column(name = "amount", nullable = false)
     private Double amount;
 
     private Double due;
-
-    private String status;
-
     private String comments;
+
+    @Column(name = "PAYMENT_MEDIUM", nullable = false)
+    private PaymentMedium paymentMedium;
+
+    @Column(name = "TRANSACTION_ID", nullable = false)
+    private String transactionId;
 
     @Column(name = "PAYMENT_DATE", nullable = false)
     private LocalDate paymentDate;
 
-    private PaymentMedium paymentMedium;
-    private String transactionId;
+    private String status;
 }
