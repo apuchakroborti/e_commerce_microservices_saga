@@ -10,6 +10,7 @@ import com.apu.user.entity.Customer;
 import com.apu.user.entity.District;
 import com.apu.user.exceptions.EmployeeNotFoundException;
 import com.apu.user.exceptions.GenericException;
+import com.apu.user.repository.AddressRepository;
 import com.apu.user.repository.CountryRepository;
 import com.apu.user.repository.CustomerRepository;
 import com.apu.user.repository.DistrictRepository;
@@ -37,6 +38,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Optional;
@@ -53,6 +55,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     private final AuthorityRepository authorityRepository;
     private final CountryRepository countryRepository;
     private final DistrictRepository districtRepository;
+    private final AddressRepository addressRepository;
 
     @Qualifier("userPasswordEncoder")
     private final PasswordEncoder passwordEncoder;
@@ -69,6 +72,7 @@ public class CustomUserServiceImpl implements CustomUserService {
                           AuthorityRepository authorityRepository,
                           CountryRepository countryRepository,
                           DistrictRepository districtRepository,
+                          AddressRepository addressRepository,
                           @Lazy RestTemplate template,
                           @Qualifier("userPasswordEncoder")PasswordEncoder passwordEncoder){
         this.customerRepository = customerRepository;
@@ -78,11 +82,12 @@ public class CustomUserServiceImpl implements CustomUserService {
         this.template = template;
         this.countryRepository = countryRepository;
         this.districtRepository = districtRepository;
+        this.addressRepository = addressRepository;
     }
 
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public User addOauthUser(Customer customer, String password) throws GenericException {
         try {
             log.info("CustomUserServiceImpl::addOauthUser start: email: {}", customer.getEmail());
@@ -132,6 +137,7 @@ public class CustomUserServiceImpl implements CustomUserService {
             User user = addOauthUser(customer, createUpdateCustomUserDto.getPassword());
             log.info("CustomUserServiceImpl::signUpUser service:  user: {} ", user.toString());
 
+            customer.setUserId(UUID.randomUUID().toString());
             customer.setOauthUser(user);
             customer.setStatus(true);
 
@@ -142,10 +148,10 @@ public class CustomUserServiceImpl implements CustomUserService {
             for(AddressDto addressDto: addressDtoList){
                 Address address = new Address();
                 Utils.copyProperty(addressDto, address);
-                Optional<Country> optionalCountry = countryRepository.findById(addressDto.getDistrict().getCountry().getId());
+                /*Optional<Country> optionalCountry = countryRepository.findById(addressDto.getDistrict().getCountry().getId());
                 if(!optionalCountry.isPresent()){
                     throw new GenericException("Country not found!");
-                }
+                }*/
                 Optional<District> districtOptional = districtRepository.findById(addressDto.getDistrict().getId());
                 if(!districtOptional.isPresent()){
                     throw new GenericException("District not found!");
@@ -154,6 +160,7 @@ public class CustomUserServiceImpl implements CustomUserService {
                 address.setDistrict(district);
                 addressList.add(address);
             }
+            addressList = addressRepository.saveAll(addressList);
             customer.setAddressList(addressList);
 
             customer.setCreatedBy(1l);

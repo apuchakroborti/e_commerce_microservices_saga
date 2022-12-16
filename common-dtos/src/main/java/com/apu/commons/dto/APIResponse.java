@@ -1,4 +1,4 @@
-package com.apu.order.dto.response;
+package com.apu.commons.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address extends EntityCommon{
+public class Address{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

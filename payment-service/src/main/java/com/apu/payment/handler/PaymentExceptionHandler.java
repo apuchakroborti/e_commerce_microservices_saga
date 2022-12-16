@@ -1,7 +1,7 @@
 package com.apu.payment.handler;
 
-import com.apu.payment.dto.APIResponse;
-import com.apu.payment.dto.ErrorDto;
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.ErrorDto;
 import com.apu.payment.exceptions.CustomerNotFoundException;
 import com.apu.payment.exceptions.GenericException;
 import com.apu.payment.exceptions.PaymentNotFoundException;

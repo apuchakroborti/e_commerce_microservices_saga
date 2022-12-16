@@ -1,5 +1,6 @@
 package com.apu.product.services.impls;
 
+import com.apu.commons.dto.product.ProductDto;
 import com.apu.product.dto.request.ProductSearchCriteria;
 import com.apu.product.entity.Product;
 import com.apu.product.exceptions.GenericException;
@@ -7,7 +8,6 @@ import com.apu.product.repository.ProductRepository;
 import com.apu.product.services.ProductService;
 import com.apu.product.specifications.ProductSpecifications;
 import com.apu.product.utils.Utils;
-import com.apu.product.dto.ProductDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -44,6 +45,17 @@ public class ProductServiceImpl implements ProductService {
         }
 
     }
+
+    @Override
+    public ProductDto getProductById(Long id) throws GenericException {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if(!productOptional.isPresent())throw new GenericException("Product not found by id: "+id);
+
+        ProductDto productDto = new ProductDto();
+        Utils.copyProperty(productOptional.get(), productDto);
+        return productDto;
+    }
+
     @Override
     public Page<ProductDto> getAllProductsWithSearchCriteria(ProductSearchCriteria criteria, Pageable pageable) throws GenericException{
         Page<Product> productPage = productRepository.findAll(

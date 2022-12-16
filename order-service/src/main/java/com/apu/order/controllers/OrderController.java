@@ -1,9 +1,9 @@
 package com.apu.order.controllers;
 
-import com.apu.order.dto.CustomerOrderDto;
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.Pagination;
+import com.apu.commons.dto.order.CustomerOrderDto;
 import com.apu.order.dto.request.OrderSearchCriteria;
-import com.apu.order.dto.response.APIResponse;
-import com.apu.order.dto.response.Pagination;
 import com.apu.order.entity.CustomerOrder;
 import com.apu.order.exceptions.GenericException;
 import com.apu.order.services.OrderService;

@@ -26,7 +26,7 @@ drop table if exists DISTRICT;
 CREATE TABLE DISTRICT(
     ID              bigint not null auto_increment,
     NAME	        varchar(255) not null,
-    NAME_URF	    varchar(255),
+    NAME_UTF	    varchar(255),
     country_id     bigint not null,
     primary key (ID)
 ) engine=InnoDB;
@@ -35,7 +35,7 @@ drop table if exists COUNTRY;
 CREATE TABLE COUNTRY(
     ID              bigint not null auto_increment,
     NAME	        varchar(255) not null,
-    NAME_URF	    varchar(255),
+    NAME_UTF	    varchar(255),
     CODE_2	        char(2),
     CODE_3	        char(3),
     primary key (ID)

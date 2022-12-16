@@ -1,8 +1,8 @@
 package com.apu.payment.controllers;
 
-import com.apu.payment.dto.APIResponse;
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.Pagination;
 import com.apu.payment.dto.PaymentDto;
-import com.apu.payment.dto.Pagination;
 import com.apu.payment.dto.request.PaymentSearchCriteria;
 import com.apu.payment.entity.Payment;
 import com.apu.payment.exceptions.GenericException;

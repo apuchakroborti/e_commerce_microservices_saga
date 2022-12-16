@@ -1,12 +1,11 @@
 package com.apu.product.controllers;
 
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.Pagination;
+import com.apu.commons.dto.product.ProductDto;
 import com.apu.product.dto.request.ProductSearchCriteria;
-import com.apu.product.dto.response.APIResponse;
-import com.apu.product.dto.response.Pagination;
 import com.apu.product.exceptions.GenericException;
 import com.apu.product.utils.Utils;
-import com.apu.product.dto.ProductDto;
-import com.apu.product.entity.Product;
 import com.apu.product.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

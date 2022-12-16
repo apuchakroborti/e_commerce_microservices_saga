@@ -1,4 +1,4 @@
-package com.apu.order.dto.response;
+package com.apu.commons.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

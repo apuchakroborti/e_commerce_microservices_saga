@@ -1,7 +1,7 @@
 package com.apu.order.services;
 
 
-import com.apu.order.dto.CustomerOrderDto;
+import com.apu.commons.dto.order.CustomerOrderDto;
 import com.apu.order.dto.request.OrderSearchCriteria;
 import com.apu.order.exceptions.GenericException;
 import org.springframework.data.domain.Page;

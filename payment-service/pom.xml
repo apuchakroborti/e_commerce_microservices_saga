@@ -119,6 +119,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.21</version>
         </dependency>-->
+        <dependency>
+            <groupId>com.apu.microservices</groupId>
+            <artifactId>common-dtos</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

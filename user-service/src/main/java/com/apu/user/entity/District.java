@@ -20,6 +20,7 @@ public class District {
     private Long id;
 
     private String name;
+    @Column(name = "NAME_UTF")
     private String name_utf;
 
     @ManyToOne

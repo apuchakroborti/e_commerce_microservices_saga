@@ -1,4 +1,4 @@
-package com.apu.order.dto;
+package com.apu.commons.dto;
 
 
 import lombok.AllArgsConstructor;

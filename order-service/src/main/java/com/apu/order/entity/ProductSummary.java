@@ -19,9 +19,6 @@ public class ProductSummary {
     @Id
     private Long id;
 
-    @Column(name = "PRODUCT_NAME")
-    private String productName;
-
     @Column(name = "PRODUCT_PRICE", nullable = false)
     private Double productPrice;
 

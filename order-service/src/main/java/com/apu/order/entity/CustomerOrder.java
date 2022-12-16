@@ -1,5 +1,7 @@
 package com.apu.order.entity;
 
+import com.apu.commons.event.order.OrderStatus;
+import com.apu.commons.event.payment.PaymentStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,11 +36,11 @@ public class CustomerOrder extends EntityCommon {
     @Column(name = "ORDER_DETAILS")
     private String orderDetails;
 
-    @Column(name = "TOTAL_AMOUNT")
-    private Integer totalAmount;
+    @Column(name = "TOTAL_AMOUNT", nullable = false)
+    private Double totalAmount;
 
     @Column(name = "PAYMENT_AMOUNT")
-    private Integer paymentAmount;
+    private Double paymentAmount;
 
     private String comments;
 
@@ -46,4 +48,10 @@ public class CustomerOrder extends EntityCommon {
 
     @OneToMany(mappedBy = "customerOrder", fetch = FetchType.LAZY)
     private List<ProductSummary> productSummaryList = new ArrayList<>();
+
+    @Column(name = "ORDER_STATUS", nullable = false)
+    private OrderStatus orderStatus;
+
+    @Column(name = "PAYMENT_STATUS")
+    private PaymentStatus paymentStatus;
 }

@@ -1,6 +1,6 @@
 package com.apu.product.entity;
 
-import com.apu.product.utils.ImageType;
+import com.apu.commons.event.product.ImageType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

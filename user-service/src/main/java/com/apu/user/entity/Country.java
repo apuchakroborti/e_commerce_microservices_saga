@@ -19,6 +19,8 @@ public class Country {
     @Id
     private Integer id;
     private String name;
+
+    @Column(name = "NAME_UTF")
     private String name_utf;
 
     @Column(name = "code_2")

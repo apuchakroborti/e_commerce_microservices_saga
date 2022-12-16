@@ -38,5 +38,5 @@ public class Payment extends EntityCommon{
     @Column(name = "PAYMENT_DATE", nullable = false)
     private LocalDate paymentDate;
 
-    private String status;
+    private Boolean status;
 }

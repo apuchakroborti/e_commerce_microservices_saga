@@ -11,7 +11,8 @@ CREATE TABLE ORDERS(
 
     COMMENTS	    varchar(255),
     STATUS          boolean not null,
-
+    ORDER_STATUS    ENUM ('ORDER_CREATED', 'ORDER_COMPLETED', 'ORDER_CANCELLED') not null,
+    PAYMENT_STATUS  ENUM('PAYMENT_COMPLETED', 'PAYMENT_FAILED') not null,
     CREATED_BY	    bigint NOT NULL,
     CREATE_TIME	    datetime NOT NULL,
     EDITED_BY	    bigint,
@@ -24,7 +25,6 @@ CREATE TABLE ORDERS(
 drop table if exists PRODUCT_SUMMARY;
 CREATE TABLE PRODUCT_SUMMARY(
     ID                  bigint not null auto_increment,
-    PRODUCT_NAME        VARCHAR(128) NOT NULL,
     PRODUCT_PRICE       double not null,
     order_id            bigint not null,
     primary key (ID)

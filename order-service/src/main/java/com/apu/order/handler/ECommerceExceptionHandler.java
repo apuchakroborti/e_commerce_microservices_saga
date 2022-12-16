@@ -1,7 +1,7 @@
 package com.apu.order.handler;
 
-import com.apu.order.dto.response.APIResponse;
-import com.apu.order.dto.response.ErrorDto;
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.ErrorDto;
 import com.apu.order.exceptions.CustomerNotFoundException;
 import com.apu.order.exceptions.GenericException;
 import com.apu.order.exceptions.OrderNotFoundException;
