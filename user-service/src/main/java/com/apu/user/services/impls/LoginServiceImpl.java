@@ -1,6 +1,6 @@
 package com.apu.user.services.impls;
 
-import com.apu.user.dto.CustomUserDto;
+import com.apu.user.dto.CustomerDto;
 import com.apu.user.dto.request.LoginRequestDto;
 import com.apu.user.entity.Customer;
 import com.apu.user.exceptions.GenericException;
@@ -33,9 +33,9 @@ public class LoginServiceImpl implements LoginService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public CustomUserDto checkLoginUser(LoginRequestDto loginRequestDto) throws GenericException {
+    public CustomerDto checkLoginUser(LoginRequestDto loginRequestDto) throws GenericException {
         try {
-            CustomUserDto employeeDto = new CustomUserDto();
+            CustomerDto employeeDto = new CustomerDto();
 
             Optional<com.apu.user.security_oauth2.models.security.User> optionalUser = userRepository.findByUsername(loginRequestDto.getUsername());
             if (optionalUser.isPresent()) {

@@ -42,11 +42,5 @@ public class OrderStatusUpdateHandler {
 
         return customerOrderDto;
 
-       /* OrderRequestDto orderRequestDto = new OrderRequestDto();
-        orderRequestDto.setOrderId(purchaseOrder.getId());
-        orderRequestDto.setUserId(purchaseOrder.getUserId());
-        orderRequestDto.setAmount(purchaseOrder.getPrice());
-        orderRequestDto.setProductId(purchaseOrder.getProductId());
-        return orderRequestDto;*/
     }
 }

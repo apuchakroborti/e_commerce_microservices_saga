@@ -20,6 +20,8 @@ public class ProductDto extends CommonDto {
     @NotEmpty(message = "Product Name must not be empty!")
     private String productName;
 
+    @NotNull(message = "Product Code must not be null!")
+    @NotEmpty(message = "Product Code must not be empty!")
     private String productCode;
     private String barCode;
     private String qrCode;

@@ -8,6 +8,7 @@ import com.apu.order.entity.CustomerOrder;
 import com.apu.order.entity.ProductSummary;
 import com.apu.order.exceptions.GenericException;
 import com.apu.order.repository.OrderRepository;
+import com.apu.order.repository.ProductSummaryRepository;
 import com.apu.order.services.OrderService;
 import com.apu.order.services.OrderStatusPublisher;
 import com.apu.order.specifications.OrderSearchSpecifications;
@@ -33,12 +34,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderStatusPublisher orderStatusPublisher;
+    private final ProductSummaryRepository productSummaryRepository;
 
     @Autowired
     OrderServiceImpl(OrderRepository orderRepository,
-                     OrderStatusPublisher orderStatusPublisher){
+                     OrderStatusPublisher orderStatusPublisher,
+                     ProductSummaryRepository productSummaryRepository){
         this.orderRepository = orderRepository;
         this.orderStatusPublisher = orderStatusPublisher;
+        this.productSummaryRepository = productSummaryRepository;
     }
 
 
@@ -55,25 +59,24 @@ public class OrderServiceImpl implements OrderService {
             purchaseOrder.setOrderPlacingDate(LocalDate.now());
             purchaseOrder.setExpectedDeliveryDate(LocalDate.now().plus(7, ChronoUnit.DAYS));
 
-            //summation of all products price
-            Double totalAmount = 0.0;
-            List<ProductSummary> productSummaryList = new ArrayList<>();
-            for(ProductSummaryDto productSummaryDto: customerOrderDto.getProductList()){
-                ProductSummary summary = new ProductSummary();
-                Utils.copyProperty(productSummaryDto, summary);
-                productSummaryList.add(summary);
-
-                totalAmount+=productSummaryDto.getProductPrice();
-            }
-            purchaseOrder.setProductSummaryList(productSummaryList);
-            purchaseOrder.setTotalAmount(totalAmount);
-
             purchaseOrder.setOrderStatus(OrderStatus.ORDER_CREATED);
             purchaseOrder.setStatus(true);
             purchaseOrder.setCreatedBy(1L);
             purchaseOrder.setCreateTime(LocalDateTime.now());
 
             purchaseOrder = orderRepository.save(purchaseOrder);
+
+            //summation of all products price
+            List<ProductSummary> productSummaryList = new ArrayList<>();
+            for(ProductSummaryDto productSummaryDto: customerOrderDto.getProductList()){
+                ProductSummary summary = new ProductSummary();
+                Utils.copyProperty(productSummaryDto, summary);
+                summary.setCustomerOrder(purchaseOrder);
+                productSummaryList.add(summary);
+            }
+
+            purchaseOrder.setProductSummaryList(productSummaryList);
+            productSummaryRepository.saveAll(productSummaryList);
 
             Utils.copyProperty(purchaseOrder, customerOrderDto);
             log.info("OrderServiceImpl::placeOrder service end: customer Id: {}",customerOrderDto.getCustomerId());

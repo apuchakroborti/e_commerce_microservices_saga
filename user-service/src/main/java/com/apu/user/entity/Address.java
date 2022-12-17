@@ -23,7 +23,8 @@ public class Address{
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Column(name = "address_type", nullable = false)
+    @Column(name = "address_type", columnDefinition ="ENUM('PRESENT_ADDRESS', 'PERMANENT_ADDRESS', 'BILLING_ADDRESS')" , nullable = false)
+    @Enumerated(EnumType.STRING)
     private AddressType addressType;
 
     @Column(name = "details")

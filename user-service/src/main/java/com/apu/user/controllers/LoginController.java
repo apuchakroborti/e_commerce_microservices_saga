@@ -1,6 +1,6 @@
 package com.apu.user.controllers;
 
-import com.apu.user.dto.CustomUserDto;
+import com.apu.user.dto.CustomerDto;
 import com.apu.user.dto.request.LoginRequestDto;
 import com.apu.user.exceptions.GenericException;
 import com.apu.user.services.LoginService;
@@ -24,7 +24,7 @@ public class LoginController {
     * @response: employee details
     * */
     @PostMapping
-    public CustomUserDto checkLoginUser(@Valid @RequestBody LoginRequestDto loginRequestDto) throws GenericException {
+    public CustomerDto checkLoginUser(@Valid @RequestBody LoginRequestDto loginRequestDto) throws GenericException {
         return loginService.checkLoginUser(loginRequestDto);
     }
 }

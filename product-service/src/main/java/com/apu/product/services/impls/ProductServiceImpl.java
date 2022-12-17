@@ -33,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
             Utils.copyProperty(productDto, product);
             //TODO need to save the image urls into the MinIO
 
+            product.setStatus(true);
             product.setCreatedBy(1L);
             product.setCreateTime(LocalDateTime.now());
 

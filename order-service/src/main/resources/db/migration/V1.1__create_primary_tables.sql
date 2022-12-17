@@ -12,7 +12,7 @@ CREATE TABLE ORDERS(
     COMMENTS	    varchar(255),
     STATUS          boolean not null,
     ORDER_STATUS    ENUM ('ORDER_CREATED', 'ORDER_COMPLETED', 'ORDER_CANCELLED') not null,
-    PAYMENT_STATUS  ENUM('PAYMENT_COMPLETED', 'PAYMENT_FAILED') not null,
+    PAYMENT_STATUS  varchar(64),
     CREATED_BY	    bigint NOT NULL,
     CREATE_TIME	    datetime NOT NULL,
     EDITED_BY	    bigint,

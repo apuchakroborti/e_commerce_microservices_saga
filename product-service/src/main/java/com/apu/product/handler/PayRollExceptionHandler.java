@@ -1,7 +1,7 @@
 package com.apu.product.handler;
 
-import com.apu.product.dto.response.APIResponse;
-import com.apu.product.dto.response.ErrorDto;
+import com.apu.commons.dto.APIResponse;
+import com.apu.commons.dto.ErrorDto;
 import com.apu.product.exceptions.EmployeeNotFoundException;
 import com.apu.product.exceptions.GenericException;
 import com.apu.product.exceptions.PayRollNotFoundException;

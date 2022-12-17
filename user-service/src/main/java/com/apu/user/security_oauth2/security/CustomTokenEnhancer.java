@@ -2,7 +2,7 @@ package com.apu.user.security_oauth2.security;
 
 
 import com.apu.user.exceptions.GenericException;
-import com.apu.user.dto.CustomUserDto;
+import com.apu.user.dto.CustomerDto;
 import com.apu.user.security_oauth2.models.security.Authority;
 import com.apu.user.security_oauth2.models.security.User;
 import com.apu.user.services.CustomUserService;
@@ -34,7 +34,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         User user = (User) authentication.getPrincipal();
         final Map<String, Object> additionalInfo = new HashMap<>();
 
-        CustomUserDto loginInfoDto = null;
+        CustomerDto loginInfoDto = null;
         try {
             loginInfoDto = employeeService.findByUsername(user.getUsername());
         } catch (GenericException e) {

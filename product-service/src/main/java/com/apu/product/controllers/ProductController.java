@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,7 +28,7 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<APIResponse> addNewProduct(@Valid @RequestBody ProductDto productDto) throws GenericException {
         log.info("ProductController::addNewProduct request: {}", Utils.jsonAsString(productDto));
 

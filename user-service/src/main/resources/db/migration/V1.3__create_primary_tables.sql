@@ -45,7 +45,7 @@ drop table if exists CUSTOMER_ADDRESS;
 CREATE TABLE CUSTOMER_ADDRESS(
     ID bigint not null auto_increment,
     customer_id bigint not null,
-    address_type ENUM ('PRESENT_ADDRESS', 'PERMANENT_ADDRESS', 'BILLING_ADDRESS'),
+    address_type ENUM ('PRESENT_ADDRESS', 'PERMANENT_ADDRESS', 'BILLING_ADDRESS') not null,
     details VARCHAR(255),
     district_id bigint not null,
 

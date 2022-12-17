@@ -2,10 +2,9 @@ package com.apu.user.services.impls;
 
 import com.apu.user.dto.AddressDto;
 import com.apu.user.dto.CreateUpdateCustomUserDto;
-import com.apu.user.dto.CustomUserDto;
+import com.apu.user.dto.CustomerDto;
 import com.apu.user.dto.request.CustomUserSearchCriteria;
 import com.apu.user.entity.Address;
-import com.apu.user.entity.Country;
 import com.apu.user.entity.Customer;
 import com.apu.user.entity.District;
 import com.apu.user.exceptions.EmployeeNotFoundException;
@@ -26,7 +25,6 @@ import com.apu.user.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -38,7 +36,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Optional;
@@ -118,7 +115,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CustomUserDto signUpUser(CreateUpdateCustomUserDto createUpdateCustomUserDto) throws GenericException {
+    public CustomerDto signUpUser(CreateUpdateCustomUserDto createUpdateCustomUserDto) throws GenericException {
         try {
             log.info("CustomUserServiceImpl::signUpUser service start: email: {}", createUpdateCustomUserDto.getEmail());
             Optional<Customer> optionalCustomUser = customerRepository.findByEmail(createUpdateCustomUserDto.getEmail());
@@ -142,6 +139,11 @@ public class CustomUserServiceImpl implements CustomUserService {
             customer.setStatus(true);
 
 
+            customer.setCreatedBy(1l);
+            customer.setCreateTime(LocalDateTime.now());
+
+            customer = customerRepository.save(customer);
+
             //TODO need to set the addresses
             List<AddressDto> addressDtoList = createUpdateCustomUserDto.getAddressDtoList();
             List<Address> addressList = new ArrayList<>();
@@ -158,20 +160,16 @@ public class CustomUserServiceImpl implements CustomUserService {
                 }
                 District district = districtOptional.get();
                 address.setDistrict(district);
+                address.setCustomer(customer);
                 addressList.add(address);
             }
             addressList = addressRepository.saveAll(addressList);
             customer.setAddressList(addressList);
 
-            customer.setCreatedBy(1l);
-            customer.setCreateTime(LocalDateTime.now());
-
-            customer = customerRepository.save(customer);
-
-            CustomUserDto customUserDto = new CustomUserDto();
-            Utils.copyProperty(customer, customUserDto);
+            CustomerDto customerDto = new CustomerDto();
+            Utils.copyProperty(customer, customerDto);
             log.info("CustomUserServiceImpl::signUpUser service end: userId: {} and email: {}", createUpdateCustomUserDto.getUserId(), createUpdateCustomUserDto.getEmail());
-            return customUserDto;
+            return customerDto;
         }catch (GenericException e){
             throw e;
         }catch (Exception e){
@@ -183,7 +181,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 
     @Override
-    public CustomUserDto findByUsername(String username) throws GenericException{
+    public CustomerDto findByUsername(String username) throws GenericException{
         try {
             log.debug("CustomUserServiceImpl::findByUsername start:  username: {} ", username);
             Optional<Customer> optionalEmployee = customerRepository.findByEmail(username);
@@ -191,7 +189,7 @@ public class CustomUserServiceImpl implements CustomUserService {
                 log.debug("CustomUserServiceImpl::findByUsername user not found by  username: {} ", username);
                 return null;
             }
-            CustomUserDto employeeDto = new CustomUserDto();
+            CustomerDto employeeDto = new CustomerDto();
             Utils.copyProperty(optionalEmployee.get(), employeeDto);
             log.debug("CustomUserServiceImpl::findByUsername end:  username: {} ", username);
             return employeeDto;
@@ -201,7 +199,7 @@ public class CustomUserServiceImpl implements CustomUserService {
         }
     }
     @Override
-    public CustomUserDto findCustomerById(Long id) throws GenericException{
+    public CustomerDto findCustomerById(Long id) throws GenericException{
         try {
             log.info("CustomUserServiceImpl::findEmployeeById start:  id: {} ", id);
             Optional<Customer> optionalUser = customerRepository.findById(id);
@@ -210,7 +208,7 @@ public class CustomUserServiceImpl implements CustomUserService {
                 log.debug("CustomUserServiceImpl::findEmployeeById employee not found by id: {} ", id);
                 throw new EmployeeNotFoundException(Defs.USER_NOT_FOUND);
             }
-            CustomUserDto employeeDto = new CustomUserDto();
+            CustomerDto employeeDto = new CustomerDto();
             Utils.copyProperty(optionalUser.get(), employeeDto);
             log.info("CustomUserServiceImpl::findEmployeeById end: id: {} ", id);
             return employeeDto;
@@ -222,7 +220,7 @@ public class CustomUserServiceImpl implements CustomUserService {
     }
 
     @Override
-    public CustomUserDto updateCustomerById(Long id, CustomUserDto employeeDto) throws GenericException{
+    public CustomerDto updateCustomerById(Long id, CustomerDto employeeDto) throws GenericException{
         try {
             log.debug("CustomUserServiceImpl::updateEmployeeById start:  id: {} ", id);
 

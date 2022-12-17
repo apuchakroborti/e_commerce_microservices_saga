@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomUserDto extends CommonDto{
+public class CustomerDto extends CommonDto{
     private Long id;
 
     @NotBlank(message = "User Id should not be empty or null!")
@@ -32,5 +32,5 @@ public class CustomUserDto extends CommonDto{
     private LocalDate dateOfBirth;
     private Boolean status;
 
-    private List<AddressDto> addressDtoList;
+    private List<AddressDto> addressList;
 }

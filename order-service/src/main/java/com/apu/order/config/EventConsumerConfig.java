@@ -25,6 +25,10 @@ public class EventConsumerConfig {
         //if payment status failed -> cancel the order
         return (payment)-> handler.updateOrder(payment.getPaymentRequestDto().getOrderId(),po->{
             log.info("Consuming events from payment service: event id: {}", payment.getEventId());
+            log.info("Consuming events from payment service: customer id: {} order id: {}, payment status: {}",
+                    payment.getPaymentRequestDto().getCustomerId(),
+                    payment.getPaymentRequestDto().getOrderId(),
+                    payment.getPaymentStatus());
             po.setPaymentStatus(payment.getPaymentStatus());
         });
     }

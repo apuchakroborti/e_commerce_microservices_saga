@@ -50,6 +50,7 @@ public class CustomerOrder extends EntityCommon {
     private List<ProductSummary> productSummaryList = new ArrayList<>();
 
     @Column(name = "ORDER_STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @Column(name = "PAYMENT_STATUS")

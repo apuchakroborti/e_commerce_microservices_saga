@@ -16,10 +16,10 @@ public class Product extends EntityCommon {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "PRODUCT_NAME")
+    @Column(name = "PRODUCT_NAME", nullable = false)
     private String productName;
 
-    @Column(name = "product_code")
+    @Column(name = "product_code", nullable = false)
     private String productCode;
 
     @Column(name = "bar_code")
@@ -34,6 +34,7 @@ public class Product extends EntityCommon {
     @Column(name = "discount_percentage")
     private Double discountPercentage;
 
+    @Column(nullable = false)
     private Boolean status;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)

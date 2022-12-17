@@ -24,7 +24,7 @@ CREATE TABLE IMAGES(
     PRODUCT_ID bigint not null,
 
     IMAGE_URL VARCHAR(256),
-    IMAGE_TYPE ENUM ('PNG', 'JPG', 'JPEG', 'GIF', 'BMP', 'SVG'),
+    IMAGE_TYPE ENUM ('PNG', 'JPG', 'JPEG', 'GIF', 'BMP', 'SVG') not null,
 
     primary key (ID)
 ) engine=InnoDB;

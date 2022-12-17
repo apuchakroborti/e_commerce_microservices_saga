@@ -1,3 +1,5 @@
+This is a simple e-commerce system's backend using spring-boot microservices saga choreography design pattern \
+Step1. Create the databases below with granting permission to a specific user: \
 $ create database e_commerce_saga_user;
 $ GRANT ALL PRIVILEGES ON e_commerce_saga_user.* TO 'apu'@'localhost';
 
@@ -14,6 +16,26 @@ $ INSERT INTO country (NAME, NAME_UTF, CODE_2, CODE_3)
   VALUES('Bangladesh', 'Bangladesh', 'BD', 'BGD');
   
 $ INSERT INTO district( NAME, NAME_UTF, country_id) VALUES ('Dhaka', 'Dhaka', 1);
+
+Step2. From kafka folder start the zookeeper and kafka server \
+$ cd D:\kafka\bin\windows\ \
+
+$ .\zookeeper-server-stop.bat ..\..\config\zookeeper.properties \
+$ .\zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+$ .\kafka-server-stop.bat ..\..\config\server.properties \
+$ .\kafka-server-start.bat ..\..\config\server.properties
+
+Step3. Run the microservices 
+
+Step4. Create customers
+
+Step5. Create products
+
+Step6. Create orders
+
+Step7. TBD...
+
 
 This is a multi modules e-commerce management system project using microservices in SpringBoot based on saga pattern. \
 Steps to create multi modules project in intellijIdea:

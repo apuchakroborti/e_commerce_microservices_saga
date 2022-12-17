@@ -37,12 +37,12 @@ public class CustomerController {
     public ResponseEntity<APIResponse> signUpUser(@Valid @RequestBody CreateUpdateCustomUserDto customUserDto) throws GenericException {
         log.info("CustomerController::signUpUser request body {}", Utils.jsonAsString(customUserDto));
 
-        CustomUserDto employeeResponseDTO = customUserService.signUpUser(customUserDto);
+        CustomerDto employeeResponseDTO = customUserService.signUpUser(customUserDto);
         log.debug(CustomerController.class.getName()+"::signUpUser response {}", Utils.jsonAsString(employeeResponseDTO));
 
         //Builder Design pattern
-        APIResponse<CustomUserDto> responseDTO = APIResponse
-                .<CustomUserDto>builder()
+        APIResponse<CustomerDto> responseDTO = APIResponse
+                .<CustomerDto>builder()
                 .status("SUCCESS")
                 .results(employeeResponseDTO)
                 .build();
@@ -59,10 +59,10 @@ public class CustomerController {
 
         Page<Customer>  employeePage = customUserService.getCustomerList(criteria, pageable);
 
-        List<CustomUserDto> employeeDtoList = Utils.toDtoList(employeePage, CustomUserDto.class);
+        List<CustomerDto> employeeDtoList = Utils.toDtoList(employeePage, CustomerDto.class);
 
-        APIResponse<List<CustomUserDto>> responseDTO = APIResponse
-                .<List<CustomUserDto>>builder()
+        APIResponse<List<CustomerDto>> responseDTO = APIResponse
+                .<List<CustomerDto>>builder()
                 .status("SUCCESS")
                 .results(employeeDtoList)
                 .pagination(new Pagination(employeePage.getTotalElements(), employeePage.getNumberOfElements(), employeePage.getNumber(), employeePage.getSize()))
@@ -77,10 +77,10 @@ public class CustomerController {
     public ResponseEntity<APIResponse> getEmployeeById(@PathVariable(name = "id") Long id ) throws GenericException {
         log.info("CustomerController::getEmployeeById start...");
 
-        CustomUserDto employeeDto = customUserService.findCustomerById(id);
+        CustomerDto employeeDto = customUserService.findCustomerById(id);
 
-        APIResponse<CustomUserDto> responseDTO = APIResponse
-                .<CustomUserDto>builder()
+        APIResponse<CustomerDto> responseDTO = APIResponse
+                .<CustomerDto>builder()
                 .status("SUCCESS")
                 .results(employeeDto)
                 .build();
@@ -91,14 +91,14 @@ public class CustomerController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse>  updateEmployeeById(@PathVariable(name = "id") Long id, @RequestBody CustomUserDto employeeBean) throws GenericException {
+    public ResponseEntity<APIResponse>  updateEmployeeById(@PathVariable(name = "id") Long id, @RequestBody CustomerDto employeeBean) throws GenericException {
 
         log.info("CustomerController::updateEmployeeById start...");
 
-        CustomUserDto employeeDto = customUserService.updateCustomerById(id, employeeBean);
+        CustomerDto employeeDto = customUserService.updateCustomerById(id, employeeBean);
 
-        APIResponse<CustomUserDto> responseDTO = APIResponse
-                .<CustomUserDto>builder()
+        APIResponse<CustomerDto> responseDTO = APIResponse
+                .<CustomerDto>builder()
                 .status("SUCCESS")
                 .results(employeeDto)
                 .build();
