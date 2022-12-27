@@ -1,6 +1,9 @@
 package com.apu.payment.services.impls;
 
 
+import com.apu.commons.dto.payment.WalletRequestDto;
+import com.apu.commons.event.payment.WalletEvent;
+import com.apu.commons.event.payment.WalletStatus;
 import com.apu.payment.dto.WalletDto;
 import com.apu.payment.entity.Wallet;
 import com.apu.payment.exceptions.GenericException;
@@ -88,5 +91,32 @@ public class WalletServiceImpl implements WalletService {
         return walletDto;
     }
 
+    /**
+     * // get the user id
+     * // check the balance availability
+     * // if balance sufficient -> Payment completed and deduct amount from DB
+     * // if payment not sufficient -> cancel order event and update the amount in DB
+     **/
+    @Transactional
+    @Override
+    public WalletEvent newWalletEvent(WalletEvent walletEvent){
+        try {
+            log.info("PaymentConsumerConfig::processPayment::newOrderEvent--> customer id: {} order status: {}",
+                    walletEvent.getWalletRequestDto().getCustomerId(), walletEvent.getWalletStatus());
 
+            WalletRequestDto walletRequestDto = walletEvent.getWalletRequestDto();
+            Optional<Wallet> walletOptional = walletRepository.findByCustomerIdAndStatus(walletRequestDto.getCustomerId(), true);
+            if (walletOptional.isPresent()) {
+                return new WalletEvent(walletRequestDto, WalletStatus.WALLET_ALREADY_PRESENT);
+            }
+            Wallet wallet = new Wallet(walletRequestDto.getCustomerId(), 100.0, true);
+            wallet = walletRepository.save(wallet);
+            Utils.copyProperty(wallet, walletRequestDto);
+
+            return new WalletEvent(walletRequestDto, WalletStatus.WALLET_CREATE);
+        }catch (Exception e){
+            log.error("Exception occurred while creating wallet for the new customer!, message: {}", e.getMessage());
+            return new WalletEvent(null, WalletStatus.WALLET_CREATION_FAILED);
+        }
+    }
 }

@@ -1,6 +1,9 @@
 package com.apu.payment.services;
 
 
+import com.apu.commons.event.order.OrderEvent;
+import com.apu.commons.event.payment.PaymentEvent;
+import com.apu.commons.event.payment.WalletEvent;
 import com.apu.payment.dto.PaymentDto;
 import com.apu.payment.dto.WalletDto;
 import com.apu.payment.dto.request.PaymentSearchCriteria;
@@ -15,4 +18,5 @@ public interface WalletService {
    WalletDto getWalletById(Long id) throws GenericException;
    WalletDto getWalletByCustomerId(Long customerId) throws GenericException;
    WalletDto updateBalance(Long customerId, Double amount) throws GenericException;
+   WalletEvent newWalletEvent(WalletEvent walletEvent);
 }
