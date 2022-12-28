@@ -5,7 +5,7 @@ import com.apu.user.exceptions.GenericException;
 import com.apu.user.dto.CustomerDto;
 import com.apu.user.security_oauth2.models.security.Authority;
 import com.apu.user.security_oauth2.models.security.User;
-import com.apu.user.services.CustomUserService;
+import com.apu.user.services.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
     Logger logger = LoggerFactory.getLogger(CustomTokenEnhancer.class);
 
     @Autowired
-    private CustomUserService employeeService;
+    private CustomerService employeeService;
 
 
     @Override

@@ -2,12 +2,16 @@ spring:
   cloud:
     stream:
       function:
-        definition : paymentProcessor
+        definition : paymentProcessor;walletCreateProcessor
       bindings:
         paymentProcessor-in-0 :
           destination: order-event
         paymentProcessor-out-0:
           destination: payment-event
+        walletCreateProcessor-in-0:
+          destination: wallet-event
+        walletCreateProcessor-out-0:
+          destination: user-event
 
 
 #spring:

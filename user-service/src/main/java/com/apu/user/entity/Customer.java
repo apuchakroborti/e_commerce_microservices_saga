@@ -48,6 +48,9 @@ public class Customer extends EntityCommon {
     @Column(name = "STATUS", nullable = false)
     private Boolean status;
 
+    @Column(name = "WALLET_STATUS", nullable = false)
+    private Boolean walletStatus;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OAUTH_USER_ID")
     private User oauthUser;

@@ -8,7 +8,7 @@ import com.apu.user.dto.response.PasswordChangeResponseDto;
 import com.apu.user.entity.Customer;
 import com.apu.user.exceptions.GenericException;
 import com.apu.user.security_oauth2.services.UserService;
-import com.apu.user.services.CustomUserService;
+import com.apu.user.services.CustomerService;
 import com.apu.user.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +31,13 @@ import java.util.List;
 public class CustomerController {
 
     private final UserService userService;
-    private final CustomUserService customUserService;
+    private final CustomerService customerService;
 
     @PostMapping
     public ResponseEntity<APIResponse> signUpUser(@Valid @RequestBody CreateUpdateCustomUserDto customUserDto) throws GenericException {
         log.info("CustomerController::signUpUser request body {}", Utils.jsonAsString(customUserDto));
 
-        CustomerDto employeeResponseDTO = customUserService.signUpUser(customUserDto);
+        CustomerDto employeeResponseDTO = customerService.signUpUser(customUserDto);
         log.debug(CustomerController.class.getName()+"::signUpUser response {}", Utils.jsonAsString(employeeResponseDTO));
 
         //Builder Design pattern
@@ -57,7 +57,7 @@ public class CustomerController {
     public ResponseEntity<APIResponse> searchEmployee(CustomUserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException {
         log.info("CustomerController::searchEmployee start...");
 
-        Page<Customer>  employeePage = customUserService.getCustomerList(criteria, pageable);
+        Page<Customer>  employeePage = customerService.getCustomerList(criteria, pageable);
 
         List<CustomerDto> employeeDtoList = Utils.toDtoList(employeePage, CustomerDto.class);
 
@@ -77,7 +77,7 @@ public class CustomerController {
     public ResponseEntity<APIResponse> getEmployeeById(@PathVariable(name = "id") Long id ) throws GenericException {
         log.info("CustomerController::getEmployeeById start...");
 
-        CustomerDto employeeDto = customUserService.findCustomerById(id);
+        CustomerDto employeeDto = customerService.findCustomerById(id);
 
         APIResponse<CustomerDto> responseDTO = APIResponse
                 .<CustomerDto>builder()
@@ -95,7 +95,7 @@ public class CustomerController {
 
         log.info("CustomerController::updateEmployeeById start...");
 
-        CustomerDto employeeDto = customUserService.updateCustomerById(id, employeeBean);
+        CustomerDto employeeDto = customerService.updateCustomerById(id, employeeBean);
 
         APIResponse<CustomerDto> responseDTO = APIResponse
                 .<CustomerDto>builder()
@@ -112,7 +112,7 @@ public class CustomerController {
     public ResponseEntity<APIResponse> deleteEmployeeById(@PathVariable(name = "id") Long id) throws GenericException {
         log.info("CustomerController::deleteEmployeeById start...");
 
-        Boolean res = customUserService.deleteCustomerById(id);
+        Boolean res = customerService.deleteCustomerById(id);
 
         APIResponse<Boolean> responseDTO = APIResponse
                 .<Boolean>builder()

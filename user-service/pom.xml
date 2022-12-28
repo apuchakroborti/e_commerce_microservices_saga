@@ -129,6 +129,16 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.apu.microservices</groupId>
+            <artifactId>common-dtos</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.24</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

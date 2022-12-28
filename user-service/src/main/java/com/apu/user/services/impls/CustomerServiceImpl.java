@@ -1,5 +1,7 @@
 package com.apu.user.services.impls;
 
+import com.apu.commons.dto.payment.WalletRequestDto;
+import com.apu.commons.event.payment.WalletStatus;
 import com.apu.user.dto.AddressDto;
 import com.apu.user.dto.CreateUpdateCustomUserDto;
 import com.apu.user.dto.CustomerDto;
@@ -17,7 +19,8 @@ import com.apu.user.security_oauth2.models.security.Authority;
 import com.apu.user.security_oauth2.models.security.User;
 import com.apu.user.security_oauth2.repository.AuthorityRepository;
 import com.apu.user.security_oauth2.repository.UserRepository;
-import com.apu.user.services.CustomUserService;
+import com.apu.user.services.CustomerService;
+import com.apu.user.services.publisher.WalletCreatePublisher;
 import com.apu.user.specifications.CustomUserSearchSpecifications;
 import com.apu.user.utils.Defs;
 import com.apu.user.utils.Role;
@@ -46,7 +49,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 @RefreshScope
-public class CustomUserServiceImpl implements CustomUserService {
+public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
@@ -60,18 +63,21 @@ public class CustomUserServiceImpl implements CustomUserService {
     @Lazy
     private final RestTemplate template;
 
+    @Autowired
+    private WalletCreatePublisher walletCreatePublisher;
+
 //    @Value("${microservice.payslip-service.endpoints.endpoint.uri}")
 //    private String GENERATE_PAYSLIP_WHILE_JOINING;
 
     @Autowired
-    CustomUserServiceImpl(CustomerRepository customerRepository,
-                          UserRepository userRepository,
-                          AuthorityRepository authorityRepository,
-                          CountryRepository countryRepository,
-                          DistrictRepository districtRepository,
-                          AddressRepository addressRepository,
-                          @Lazy RestTemplate template,
-                          @Qualifier("userPasswordEncoder")PasswordEncoder passwordEncoder){
+    CustomerServiceImpl(CustomerRepository customerRepository,
+                        UserRepository userRepository,
+                        AuthorityRepository authorityRepository,
+                        CountryRepository countryRepository,
+                        DistrictRepository districtRepository,
+                        AddressRepository addressRepository,
+                        @Lazy RestTemplate template,
+                        @Qualifier("userPasswordEncoder")PasswordEncoder passwordEncoder){
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
@@ -169,6 +175,12 @@ public class CustomUserServiceImpl implements CustomUserService {
             CustomerDto customerDto = new CustomerDto();
             Utils.copyProperty(customer, customerDto);
             log.info("CustomUserServiceImpl::signUpUser service end: userId: {} and email: {}", createUpdateCustomUserDto.getUserId(), createUpdateCustomUserDto.getEmail());
+            //TODO create wallet for every new user while signing up
+            WalletRequestDto walletRequestDto = new WalletRequestDto();
+            walletRequestDto.setCustomerId(customer.getId());
+
+            walletCreatePublisher.publishWalletCreateEvent(walletRequestDto, WalletStatus.WALLET_CREATE);
+
             return customerDto;
         }catch (GenericException e){
             throw e;
@@ -319,4 +331,16 @@ public class CustomUserServiceImpl implements CustomUserService {
             throw new GenericException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public void updateWalletStatus(Long customerId, Boolean walletStatus){
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+        if(!optionalCustomer.isPresent()){
+            log.error("Customer can not found by id: {}", customerId);
+        }
+        Customer customer = optionalCustomer.get();
+        customer.setWalletStatus(walletStatus);
+        customerRepository.save(customer);
+    }
+
 }

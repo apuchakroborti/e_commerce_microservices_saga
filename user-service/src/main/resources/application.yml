@@ -1,3 +1,14 @@
+spring:
+  cloud:
+    stream:
+      function:
+        definition : walletCreateProcessor;walletEventConsumer
+      bindings:
+        walletEventConsumer-in-0:
+          destination: user-event
+        walletCreateProcessor-out-0:
+          destination: wallet-event
+
 #spring:
 #  application:
 #    name: EMPLOYEE-SERVICE

@@ -9,7 +9,7 @@ import com.apu.user.security_oauth2.models.security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface CustomUserService {
+public interface CustomerService {
     CustomerDto signUpUser(CreateUpdateCustomUserDto customUserDto) throws GenericException;
     User addOauthUser(Customer employee, String password) throws GenericException;
 
@@ -18,4 +18,5 @@ public interface CustomUserService {
     CustomerDto updateCustomerById(Long id, CustomerDto employeeBean) throws GenericException;
     Page<Customer> getCustomerList(CustomUserSearchCriteria criteria, Pageable pageable) throws GenericException;
     Boolean deleteCustomerById(Long id) throws GenericException;
+    void updateWalletStatus(Long customerId, Boolean walletStatus);
 }

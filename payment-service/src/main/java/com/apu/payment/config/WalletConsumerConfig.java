@@ -24,6 +24,7 @@ public class WalletConsumerConfig {
         return walletEventFlux -> walletEventFlux.flatMap(this::processWalletCreation);
     }
 
+    //TODO need to work for the wallet event consume and publish event to the user event
     private Mono<WalletEvent> processWalletCreation(WalletEvent walletEvent) {
         // get the customer id
         // check the balance availability

@@ -13,6 +13,7 @@ CREATE TABLE CUSTOMERS(
     OAUTH_USER_ID bigint not null,
 
     STATUS	        BOOLEAN DEFAULT TRUE,
+    WALLET_STATUS   BOOLEAN,
 
     CREATED_BY	    bigint NOT NULL,
     CREATE_TIME	    datetime NOT NULL,
