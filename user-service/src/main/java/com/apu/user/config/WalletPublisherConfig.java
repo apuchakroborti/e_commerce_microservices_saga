@@ -1,6 +1,6 @@
 package com.apu.user.config;
 
-import com.apu.commons.event.payment.WalletEvent;
+import com.apu.commons.event.user.CustomerEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
@@ -12,12 +12,12 @@ import java.util.function.Supplier;
 public class WalletPublisherConfig {
 
     @Bean
-    public Sinks.Many<WalletEvent> walletSinks(){
+    public Sinks.Many<CustomerEvent> walletSinks(){
         return Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @Bean
-    public Supplier<Flux<WalletEvent>> walletSupplier(Sinks.Many<WalletEvent> sinks){
+    public Supplier<Flux<CustomerEvent>> walletSupplier(Sinks.Many<CustomerEvent> sinks){
        return sinks::asFlux;
     }
 }

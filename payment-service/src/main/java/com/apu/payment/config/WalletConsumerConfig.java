@@ -1,7 +1,8 @@
 package com.apu.payment.config;
 
 import com.apu.commons.event.payment.WalletEvent;
-import com.apu.commons.event.payment.WalletStatus;
+import com.apu.commons.event.user.CustomerEvent;
+import com.apu.commons.event.user.CustomerStatus;
 import com.apu.payment.services.WalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,27 +21,30 @@ public class WalletConsumerConfig {
     private WalletService walletService;
 
     @Bean
-    public Function<Flux<WalletEvent>, Flux<WalletEvent>> walletCreateProcessor() {
-        return walletEventFlux -> walletEventFlux.flatMap(this::processWalletCreation);
+    public Function<Flux<CustomerEvent>, Flux<WalletEvent>> walletProcessor() {
+        log.info("WalletConsumerConfig::walletProcessor --> ");
+        return walletEventFlux -> walletEventFlux.flatMap(this::processWallet);
     }
 
     //TODO need to work for the wallet event consume and publish event to the user event
-    private Mono<WalletEvent> processWalletCreation(WalletEvent walletEvent) {
+    private Mono<WalletEvent> processWallet(CustomerEvent customerEvent) {
         // get the customer id
         // check the balance availability
         // if balance sufficient -> Payment completed and deduct amount from DB
         // if payment not sufficient -> cancel order event and update the amount in DB
-        log.info("WalletConsumerConfig::processWalletCreation --> customer id: {} wallet status: {}",
-                walletEvent.getWalletRequestDto().getCustomerId(), walletEvent.getWalletStatus());
+        log.info("WalletConsumerConfig::processWallet --> customer id: {} customer status: {}",
+                customerEvent.getWalletRequestDto().getCustomerId(), customerEvent.getCustomerStatus());
 
-        if(WalletStatus.WALLET_CREATE.equals(walletEvent.getWalletStatus())){
-            log.info("WalletConsumerConfig::processWalletCreation --> new Order Event-->customer id: {} wallet status: {}",
-                    walletEvent.getWalletRequestDto().getCustomerId(), walletEvent.getWalletStatus());
+        if(CustomerStatus.NEW_CUSTOMER.equals(customerEvent.getCustomerStatus())){
+            log.info("WalletConsumerConfig::processWallet --> new Customer Event-->customer id: {} customer status: {}",
+                    customerEvent.getWalletRequestDto().getCustomerId(), customerEvent.getCustomerStatus());
 
-            return  Mono.fromSupplier(()->this.walletService.newWalletEvent(walletEvent));
+            return  Mono.fromSupplier(()->this.walletService.newWalletEvent(customerEvent));
         }else{
-            log.info("WalletConsumerConfig::processWalletCreation --> cancelWalletEvent--> customer id: {} wallet status: {}",
-                    walletEvent.getWalletRequestDto().getCustomerId(), walletEvent.getWalletStatus());
+            //TODO need to block the wallet for the users who are blocked
+            log.info("WalletConsumerConfig::processWalletCreation --> cancel Customer Wallet Event--> customer id: {} customer status: {}",
+                    customerEvent.getWalletRequestDto().getCustomerId(), customerEvent.getCustomerStatus());
+
             return Mono.fromRunnable(()->{
                 log.info("Wallet is not created!");
             });

@@ -2,6 +2,7 @@ package com.apu.user.services.impls;
 
 import com.apu.commons.dto.payment.WalletRequestDto;
 import com.apu.commons.event.payment.WalletStatus;
+import com.apu.commons.event.user.CustomerStatus;
 import com.apu.user.dto.AddressDto;
 import com.apu.user.dto.CreateUpdateCustomUserDto;
 import com.apu.user.dto.CustomerDto;
@@ -156,10 +157,7 @@ public class CustomerServiceImpl implements CustomerService {
             for(AddressDto addressDto: addressDtoList){
                 Address address = new Address();
                 Utils.copyProperty(addressDto, address);
-                /*Optional<Country> optionalCountry = countryRepository.findById(addressDto.getDistrict().getCountry().getId());
-                if(!optionalCountry.isPresent()){
-                    throw new GenericException("Country not found!");
-                }*/
+
                 Optional<District> districtOptional = districtRepository.findById(addressDto.getDistrict().getId());
                 if(!districtOptional.isPresent()){
                     throw new GenericException("District not found!");
@@ -175,11 +173,12 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerDto customerDto = new CustomerDto();
             Utils.copyProperty(customer, customerDto);
             log.info("CustomUserServiceImpl::signUpUser service end: userId: {} and email: {}", createUpdateCustomUserDto.getUserId(), createUpdateCustomUserDto.getEmail());
-            //TODO create wallet for every new user while signing up
+
+            //create wallet for every new user while signing up
             WalletRequestDto walletRequestDto = new WalletRequestDto();
             walletRequestDto.setCustomerId(customer.getId());
 
-            walletCreatePublisher.publishWalletCreateEvent(walletRequestDto, WalletStatus.WALLET_CREATE);
+            walletCreatePublisher.publishWalletCreateEvent(walletRequestDto, CustomerStatus.NEW_CUSTOMER);
 
             return customerDto;
         }catch (GenericException e){

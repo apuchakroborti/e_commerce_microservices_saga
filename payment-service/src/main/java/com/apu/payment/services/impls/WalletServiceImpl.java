@@ -4,6 +4,7 @@ package com.apu.payment.services.impls;
 import com.apu.commons.dto.payment.WalletRequestDto;
 import com.apu.commons.event.payment.WalletEvent;
 import com.apu.commons.event.payment.WalletStatus;
+import com.apu.commons.event.user.CustomerEvent;
 import com.apu.payment.dto.WalletDto;
 import com.apu.payment.entity.Wallet;
 import com.apu.payment.exceptions.GenericException;
@@ -99,20 +100,22 @@ public class WalletServiceImpl implements WalletService {
      **/
     @Transactional
     @Override
-    public WalletEvent newWalletEvent(WalletEvent walletEvent){
+    public WalletEvent newWalletEvent(CustomerEvent customerEvent){
         try {
-            log.info("PaymentConsumerConfig::processPayment::newOrderEvent--> customer id: {} order status: {}",
-                    walletEvent.getWalletRequestDto().getCustomerId(), walletEvent.getWalletStatus());
+            log.info("PaymentConsumerConfig::processPayment::newOrderEvent--> customer id: {} customer status: {}",
+                    customerEvent.getWalletRequestDto().getCustomerId(), customerEvent.getCustomerStatus());
 
-            WalletRequestDto walletRequestDto = walletEvent.getWalletRequestDto();
+            WalletRequestDto walletRequestDto = customerEvent.getWalletRequestDto();
             Optional<Wallet> walletOptional = walletRepository.findByCustomerIdAndStatus(walletRequestDto.getCustomerId(), true);
             if (walletOptional.isPresent()) {
+                log.info("Wallet already present by customer id: {}", walletRequestDto.getCustomerId());
                 return new WalletEvent(walletRequestDto, WalletStatus.WALLET_ALREADY_PRESENT);
             }
             Wallet wallet = new Wallet(walletRequestDto.getCustomerId(), 100.0, true);
             wallet = walletRepository.save(wallet);
             Utils.copyProperty(wallet, walletRequestDto);
 
+            log.info("Wallet created successfully for the customer id: {}", walletRequestDto.getCustomerId());
             return new WalletEvent(walletRequestDto, WalletStatus.WALLET_CREATE);
         }catch (Exception e){
             log.error("Exception occurred while creating wallet for the new customer!, message: {}", e.getMessage());

@@ -2,11 +2,11 @@ spring:
   cloud:
     stream:
       function:
-        definition : walletCreateProcessor;walletEventConsumer
+        definition : walletSupplier;walletEventConsumer
       bindings:
         walletEventConsumer-in-0:
           destination: user-event
-        walletCreateProcessor-out-0:
+        walletSupplier-out-0:
           destination: wallet-event
 
 #spring:

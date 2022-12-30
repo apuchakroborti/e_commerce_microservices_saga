@@ -1,8 +1,8 @@
 package com.apu.user.services.publisher;
 
 import com.apu.commons.dto.payment.WalletRequestDto;
-import com.apu.commons.event.payment.WalletEvent;
-import com.apu.commons.event.payment.WalletStatus;
+import com.apu.commons.event.user.CustomerEvent;
+import com.apu.commons.event.user.CustomerStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,14 +13,14 @@ import reactor.core.publisher.Sinks;
 @Slf4j
 public class WalletCreatePublisher {
     @Autowired
-    private Sinks.Many<WalletEvent> walletSinks;
+    private Sinks.Many<CustomerEvent> walletSinks;
 
 
-    public void publishWalletCreateEvent(WalletRequestDto walletRequestDto, WalletStatus walletStatus){
-        log.info("Publishing event from user service: customer id: {}, wallet status: {}",
+    public void publishWalletCreateEvent(WalletRequestDto walletRequestDto, CustomerStatus customerStatus){
+        log.info("Publishing event from user service: customer id: {}, customer status: {}",
                 walletRequestDto.getCustomerId(),
-                walletStatus);
-        WalletEvent walletEvent = new WalletEvent(walletRequestDto, walletStatus);
-        walletSinks.tryEmitNext(walletEvent);
+                customerStatus);
+        CustomerEvent customerEvent = new CustomerEvent(walletRequestDto, customerStatus);
+        walletSinks.tryEmitNext(customerEvent);
     }
 }

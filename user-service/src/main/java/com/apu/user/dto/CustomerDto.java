@@ -31,6 +31,7 @@ public class CustomerDto extends CommonDto{
     @NotNull(message = "Date of Joining should not be null!")
     private LocalDate dateOfBirth;
     private Boolean status;
+    private Boolean walletStatus;
 
     private List<AddressDto> addressList;
 }

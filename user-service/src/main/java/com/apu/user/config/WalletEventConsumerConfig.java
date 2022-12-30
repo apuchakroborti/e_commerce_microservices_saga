@@ -2,7 +2,6 @@ package com.apu.user.config;
 
 import com.apu.commons.event.payment.WalletEvent;
 import com.apu.commons.event.payment.WalletStatus;
-import com.apu.user.services.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

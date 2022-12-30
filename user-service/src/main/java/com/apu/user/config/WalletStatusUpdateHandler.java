@@ -11,10 +11,6 @@ import java.util.function.Consumer;
 @Configuration
 public class WalletStatusUpdateHandler {
 
-
-    /*@Autowired
-    private OrderStatusPublisher publisher;*/
-
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -25,16 +21,5 @@ public class WalletStatusUpdateHandler {
 
     private void updateCustomer(Customer customer) {
         customerRepository.save(customer);
-        /*if (!isWalletCreateComplete) {
-            publisher.publishOrderEvent(convertEntityToDto(customer), orderStatus);
-        }*/
     }
-
-    /*public CustomerOrderDto convertEntityToDto(CustomerOrder customerOrder) {
-        CustomerOrderDto customerOrderDto = new CustomerOrderDto();
-        Utils.copyProperty(customerOrder, customerOrderDto);
-
-        return customerOrderDto;
-
-    }*/
 }

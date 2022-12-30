@@ -8,7 +8,4 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/wallet")
 @Slf4j
 public class WalletController {
-
-
-
 }
